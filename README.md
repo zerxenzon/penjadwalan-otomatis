@@ -1,28 +1,10 @@
-# Dokumentasi Sistem Penjadwalan Otomatis
+1. pertama kalo ridwan bisa fungsikan simbol mata yang ada di halaman login.
+2. tinggal yang fitur dashboard dekan aja wan, ntar kalo fiturnya beres bisa aku utak atik di sini
 
-## Cara Install
+Segitu aja sih wan sugan bis oke! target 1 bulan hehe
 
-1. Clone repository
-2. Copy .env.example menjadi .env
-3. Edit konfigurasi database di .env
-4. Jalankan: php artisan migrate --seed
-5. Jalankan: npm run dev
-6. Akses: http://localhost:8000
+untuk menjalankan database tinggal panggil dengan tools
 
-## Akun Login Demo
+"php artisan migrate:fresh --seed"
 
-### Admin
-- Username: admin@example.com
-- Password: password
-
-### Kaprodi
-- Username: kaprodi_if
-- Password: password123
-
-### Dosen
-- Username: dosen_budi
-- Password: password123
-
-## Struktur Project
-
-...
+itu untuk menyambungkan ke database
