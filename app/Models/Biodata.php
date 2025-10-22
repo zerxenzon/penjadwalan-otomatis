@@ -13,6 +13,7 @@ class Biodata extends Model
 
     protected $fillable = [
         'user_id',
+        'kelas_id',
         'nip',
         'nik',
         'alamat',
@@ -31,6 +32,11 @@ class Biodata extends Model
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function kelas()
+    {
+        return $this->belongsTo(Kelas::class, 'kelas_id');
     }
 }
 

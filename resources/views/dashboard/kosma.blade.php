@@ -44,7 +44,7 @@
         <h5 class="mb-0">Aksi Utama</h5>
     </div>
     <div class="card-body">
-        <a href="#" class="btn btn-primary">
+        <a href="{{ route('pindah-jadwal.index') }}" class="btn btn-primary">
             <i class="bi bi-check-circle"></i> Lihat Permintaan Pindah Jadwal
         </a>
     </div>

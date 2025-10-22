@@ -18,7 +18,7 @@ class UserSeeder extends Seeder
         DB::table('user')->insert([
             // Dekan
             [
-                'nama' => 'Ruuqi',
+                'nama' => 'dekan Ruuqi',
                 'username' => 'dekan123',
                 'email' => 'dekan@gmail.com',
                 'password' => Hash::make('dekan123'),
@@ -30,7 +30,7 @@ class UserSeeder extends Seeder
 
             // Kaprodi
             [
-                'nama' => 'Ruuqi',
+                'nama' => 'kaprodi Ruuqi',
                 'username' => 'kaprodi123',
                 'email' => 'kaprodi@gmail.com',
                 'password' => Hash::make('kaprodi123'),
@@ -42,34 +42,20 @@ class UserSeeder extends Seeder
 
             // Dosen 1
             [
-                'nama' => 'Ruuqi',
+                'nama' => 'dosen Ruuqi',
                 'username' => 'dosen123',
-                'email' => 'dosen@gmail.com',
+                'email' => 'dosen1@gmail.com',
                 'password' => Hash::make('dosen123'),
                 'role_id' => 4, // Dosen
                 'status_id' => 1, // Aktif
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
-
-            // Dosen 2
             [
-                'nama' => 'Ruuqi',
-                'username' => 'dosen_ridwan',
-                'email' => 'ridwan@gmail.com',
-                'password' => Hash::make('dosen123'),
-                'role_id' => 4, // Dosen
-                'status_id' => 1, // Aktif
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-
-            // Dosen 3
-            [
-                'nama' => 'Ruuqi',
-                'username' => 'nurjaman12',
+                'nama' => 'Muhammad Nurjaman',
+                'username' => 'nurjaman123',
                 'email' => 'nurjaman@gmail.com',
-                'password' => Hash::make('nurjaman12'),
+                'password' => Hash::make('nurjaman123'),
                 'role_id' => 4, // Dosen
                 'status_id' => 1, // Aktif
                 'created_at' => now(),
@@ -78,7 +64,7 @@ class UserSeeder extends Seeder
 
             // KOSMA 1 (Perwakilan Kelas SI-R-SM3)
             [
-                'nama' => 'Ruuqi',
+                'nama' => 'Kosma Ruuqi',
                 'username' => 'kosma123',
                 'email' => 'kosma1@example.com',
                 'password' => Hash::make('kosma123'),
@@ -90,10 +76,10 @@ class UserSeeder extends Seeder
 
             // KOSMA 2 (Perwakilan Kelas SI-NR-SM3)
             [
-                'nama' => 'Putri',
-                'username' => 'kosma_putri',
+                'nama' => 'Wakil Kosma Ruuqi',
+                'username' => 'wakilkosma123',
                 'email' => 'kosma2@example.com',
-                'password' => Hash::make('password123'),
+                'password' => Hash::make('wakilkosma123'),
                 'role_id' => 6, // KOSMA
                 'status_id' => 1, // Aktif
                 'created_at' => now(),
@@ -102,22 +88,10 @@ class UserSeeder extends Seeder
 
             // Mahasiswa 1
             [
-                'nama' => 'Ruuqi',
+                'nama' => 'Mahasiswa Ruuqi',
                 'username' => 'mahasiswa123',
                 'email' => 'ade@example.com',
                 'password' => Hash::make('mahasiswa123'),
-                'role_id' => 1, // Mahasiswa
-                'status_id' => 1, // Aktif
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-
-            // Mahasiswa 2
-            [
-                'nama' => 'Bima Sakti',
-                'username' => 'mhs_bima',
-                'email' => 'bima@example.com',
-                'password' => Hash::make('password123'),
                 'role_id' => 1, // Mahasiswa
                 'status_id' => 1, // Aktif
                 'created_at' => now(),

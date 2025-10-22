@@ -106,12 +106,8 @@ class DashboardController extends Controller
      */
     public function mahasiswa()
     {
-        // Ambil kelas dari biodata atau relasi lainnya
-        $data = [
-            'jadwal_kelas' => Jadwal::all(), // Simplified, nanti bisa di-filter per kelas
-        ];
-
-        return view('dashboard.mahasiswa', $data);
+        $controller = new DashboardMahasiswaController();
+        return $controller->index();
     }
 
     /**

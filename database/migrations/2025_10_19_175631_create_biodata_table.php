@@ -17,6 +17,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('user_id')->unique();
             $table->string('nip', 30)->nullable()->unique();
+            $table->string('nidn', 30)->nullable()->unique();
             $table->string('nik', 20)->nullable();
             $table->string('alamat', 255)->nullable();
             $table->string('nomor_telepon', 15)->nullable();

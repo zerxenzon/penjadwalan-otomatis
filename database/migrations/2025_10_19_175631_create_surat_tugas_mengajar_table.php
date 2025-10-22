@@ -20,6 +20,7 @@ return new class extends Migration
             $table->unsignedBigInteger('kelas_id');
             $table->unsignedBigInteger('semester_id');
             $table->unsignedBigInteger('status_id');
+            $table->string('nomor_surat')->unique();
             $table->text('catatan')->nullable();
             $table->timestamps();
 

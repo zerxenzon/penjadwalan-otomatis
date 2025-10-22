@@ -5,10 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use App\Traits\HasRoleAndPermissions;
 
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, HasRoleAndPermissions;
 
     protected $table = 'user';
 
@@ -44,7 +45,7 @@ class User extends Authenticatable
 
     public function biodata()
     {
-        return $this->hasOne(Biodata::class, 'user_id');
+        return $this->hasOne(Biodata::class, 'user_id', 'id');
     }
 
     public function suratTugasMengajar()
@@ -71,4 +72,25 @@ class User extends Authenticatable
     {
         return $this->hasMany(PindahJadwal::class, 'kosma_id');
     }
+
+        // === Role Checking Methods ===
+        public function isDosen()
+        {
+            return $this->role && $this->role->nama === 'dosen';
+        }
+
+        public function isKosma()
+        {
+            return $this->role && $this->role->nama === 'kosma';
+        }
+
+        public function isDekan()
+        {
+            return $this->role && $this->role->nama === 'dekan';
+        }
+
+        public function isKaprodiOrDekan()
+        {
+            return $this->role && in_array($this->role->nama, ['kaprodi', 'dekan']);
+        }
 }

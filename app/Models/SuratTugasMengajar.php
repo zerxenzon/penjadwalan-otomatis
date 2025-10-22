@@ -18,6 +18,7 @@ class SuratTugasMengajar extends Model
         'semester_id',
         'status_id',
         'catatan',
+        'nomor_surat',
     ];
 
     public function dosen()

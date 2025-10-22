@@ -53,14 +53,14 @@
         <h5 class="mb-0">Aksi Cepat</h5>
     </div>
     <div class="card-body">
-        <a href="#" class="btn btn-primary me-2">
-            <i class="bi bi-plus-circle"></i> Tambah Mata Kuliah
+        <a href="/mata-kuliah" class="btn btn-primary me-2">
+            <i class="bi bi-book"></i> Kelola Mata Kuliah
         </a>
-        <a href="#" class="btn btn-success me-2">
-            <i class="bi bi-plus-circle"></i> Tambah Kelas
+        <a href="/kelas" class="btn btn-success me-2">
+            <i class="bi bi-people"></i> Kelola Kelas
         </a>
-        <a href="#" class="btn btn-info">
-            <i class="bi bi-file-text"></i> Buat Surat Tugas
+        <a href="/surat-tugas" class="btn btn-info">
+            <i class="bi bi-file-text"></i> Kelola Surat Tugas
         </a>
     </div>
 </div>

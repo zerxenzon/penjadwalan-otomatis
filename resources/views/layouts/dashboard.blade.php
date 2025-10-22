@@ -1,5 +1,43 @@
 @extends('layouts.app')
 
+@push('styles')
+<style>
+    /* Sidebar Styling */
+    .sidebar {
+        min-height: 100vh;
+        box-shadow: 0 0 10px rgba(0,0,0,.1);
+    }
+    
+    .sidebar .nav-link {
+        color: #333;
+        padding: .7rem 1rem;
+        border-radius: 5px;
+        margin: 0 .5rem;
+    }
+    
+    .sidebar .nav-link:hover {
+        background-color: rgba(13, 110, 253, .1);
+        color: #0d6efd;
+    }
+    
+    .sidebar .nav-link.active {
+        background-color: #0d6efd;
+        color: white;
+    }
+    
+    .sidebar-heading {
+        font-size: .75rem;
+        font-weight: bold;
+    }
+    
+    .nav-section {
+        border-top: 1px solid #eee;
+        margin-top: 1rem;
+        padding-top: .5rem;
+    }
+</style>
+@endpush
+
 @section('content')
 <div class="container-fluid">
     <div class="row">
@@ -14,71 +52,100 @@
                     </small>
                 </div>
 
-                <hr>
-
                 <!-- Menu Navigation -->
                 <ul class="nav flex-column">
-                    <!-- Dekan Menu -->
-                    @if (auth()->user()->role->nama === 'dekan')
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ route('dashboard.dekan') }}">
-                                <i class="bi bi-speedometer2"></i> Dashboard
-                            </a>
-                        </li>
+                    <!-- Dashboard -->
+                    <li class="nav-item">
+                        <a href="{{ route('dashboard.' . auth()->user()->role->nama) }}" 
+                           class="nav-link {{ request()->routeIs('dashboard.*') && !request()->is('*/data-master*') ? 'active' : '' }}">
+                            <i class="bi bi-house-door me-2"></i>
+                            Dashboard
+                        </a>
+                    </li>
+
+                    <!-- Menu Dekan -->
+                    @if(auth()->user()->role->nama === 'dekan')
+                        <div class="nav-section">
+                            <h6 class="sidebar-heading px-3 mt-2 mb-2">Menu Dekan</h6>
+                            
+                            <li class="nav-item">
+                                <a href="{{ route('surat-tugas.index') }}" 
+                                   class="nav-link {{ request()->routeIs('surat-tugas.*') ? 'active' : '' }}">
+                                    <i class="bi bi-file-text me-2"></i>
+                                    Surat Tugas
+                                </a>
+                            </li>
+                        </div>
                     @endif
 
-                    <!-- Kaprodi Menu -->
-                    @if (auth()->user()->role->nama === 'kaprodi' || auth()->user()->role->nama === 'dekan')
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ route('dashboard.kaprodi') }}">
-                                <i class="bi bi-speedometer2"></i> Dashboard
-                            </a>
-                        </li>
+                    <!-- Menu Kaprodi -->
+                    @if(in_array(auth()->user()->role->nama, ['kaprodi', 'dekan']))
+                        <div class="nav-section">
+                            <h6 class="sidebar-heading px-3 mt-2 mb-2">Menu Kaprodi</h6>
+                            
+                            <li class="nav-item">
+                                <a href="/mata-kuliah" 
+                                   class="nav-link {{ request()->is('mata-kuliah*') ? 'active' : '' }}">
+                                    <i class="bi bi-book me-2"></i>
+                                    Mata Kuliah
+                                </a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a href="/kelas" 
+                                   class="nav-link {{ request()->is('kelas*') ? 'active' : '' }}">
+                                    <i class="bi bi-people me-2"></i>
+                                    Kelas
+                                </a>
+                            </li>
+                        </div>
                     @endif
 
-                    <!-- Dosen Menu -->
-                    @if (in_array(auth()->user()->role->nama, ['dosen', 'kaprodi', 'dekan']))
-                        <li class="nav-item">
-                            <a class="nav-link {{ request()->routeIs('dashboard.dosen') ? 'active' : '' }}" 
-                               href="{{ route('dashboard.dosen') }}">
-                                <i class="bi bi-speedometer2"></i> Dashboard Dosen
-                            </a>
-                        </li>
-                        
-                        <!-- Surat Tugas Menu -->
-                        <li class="nav-item">
-                            <a class="nav-link {{ request()->routeIs('surat-tugas.*') ? 'active' : '' }}" 
-                               href="{{ route('surat-tugas.index') }}">
-                                <i class="bi bi-file-text"></i> Surat Tugas
-                            </a>
-                        </li>
+                    <!-- Menu Dosen -->
+                    @if(in_array(auth()->user()->role->nama, ['dosen', 'kaprodi', 'dekan']))
+                        <div class="nav-section">
+                            <h6 class="sidebar-heading px-3 mt-2 mb-2">Menu Dosen</h6>
+                            
+                            <li class="nav-item">
+                                <a href="/barter-jadwal" 
+                                   class="nav-link {{ request()->is('barter-jadwal*') ? 'active' : '' }}">
+                                    <i class="bi bi-arrow-left-right me-2"></i>
+                                    Barter Jadwal
+                                </a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a href="/jadwal" 
+                                   class="nav-link {{ request()->is('jadwal*') ? 'active' : '' }}">
+                                    <i class="bi bi-calendar-week me-2"></i>
+                                    Jadwal Mengajar
+                                </a>
+                            </li>
+                        </div>
                     @endif
 
-                    <!-- KOSMA Menu -->
-                    @if (auth()->user()->role->nama === 'kosma')
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ route('dashboard.kosma') }}">
-                                <i class="bi bi-speedometer2"></i> Dashboard
-                            </a>
-                        </li>
+                    <!-- Menu Kosma -->
+                    @if(auth()->user()->role->nama === 'kosma')
+                        <div class="nav-section">
+                            <h6 class="sidebar-heading px-3 mt-2 mb-2">Menu Kosma</h6>
+                            <!-- Add Kosma specific menu items here -->
+                        </div>
                     @endif
 
-                    <!-- Mahasiswa Menu -->
-                    @if (auth()->user()->role->nama === 'mahasiswa')
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ route('dashboard.mahasiswa') }}">
-                                <i class="bi bi-speedometer2"></i> Dashboard
-                            </a>
-                        </li>
+                    <!-- Menu Mahasiswa -->
+                    @if(auth()->user()->role->nama === 'mahasiswa')
+                        <div class="nav-section">
+                            <h6 class="sidebar-heading px-3 mt-2 mb-2">Menu Mahasiswa</h6>
+                            <!-- Add Mahasiswa specific menu items here -->
+                        </div>
                     @endif
 
-                    <!-- Sekprodi Menu -->
-                    @if (auth()->user()->role->nama === 'sekprodi')
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ route('dashboard.sekprodi') }}">
-                                <i class="bi bi-speedometer2"></i> Dashboard
-                            </a>
-                        </li>
+                    <!-- Menu Sekprodi -->
+                    @if(auth()->user()->role->nama === 'sekprodi')
+                        <div class="nav-section">
+                            <h6 class="sidebar-heading px-3 mt-2 mb-2">Menu Sekprodi</h6>
+                            <!-- Add Sekprodi specific menu items here -->
+                        </div>
                     @endif
                 </ul>
 
@@ -87,8 +154,9 @@
                 <!-- Logout -->
                 <form action="{{ route('logout') }}" method="POST">
                     @csrf
-                    <button type="submit" class="btn btn-link nav-link text-danger">
-                        <i class="bi bi-box-arrow-right"></i> Logout
+                    <button type="submit" class="btn btn-link nav-link text-danger w-100 text-start">
+                        <i class="bi bi-box-arrow-right me-2"></i>
+                        Logout
                     </button>
                 </form>
             </div>

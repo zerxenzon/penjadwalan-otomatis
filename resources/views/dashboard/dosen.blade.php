@@ -84,17 +84,4 @@
     </div>
 </div>
 
-<!-- Quick Actions -->
-<div class="row mt-4">
-    <div class="col-md-6">
-        <a href="#" class="btn btn-primary w-100">
-            <i class="bi bi-arrow-left-right"></i> Ajukan Barter Jadwal
-        </a>
-    </div>
-    <div class="col-md-6">
-        <a href="#" class="btn btn-success w-100">
-            <i class="bi bi-calendar-event"></i> Charter Jadwal
-        </a>
-    </div>
-</div>
 @endsection
