@@ -131,49 +131,72 @@ class SuratTugasMengajarController extends Controller
 
         $validated = $request->validate([
             "dosen_id" => "required|exists:user,id",
-            "mata_kuliah_id" => "required|exists:mata_kuliah,id",
-            "kelas_id" => "required|exists:kelas,id",
             "semester_id" => "required|exists:semester,id",
+            "mata_kuliah" => "required|array|min:1",
+            "mata_kuliah.*.mata_kuliah_id" => "required|exists:mata_kuliah,id",
+            "mata_kuliah.*.kelas_id" => "required|exists:kelas,id",
+            "mata_kuliah.*.sks" => "required|integer|min:1",
+            "mata_kuliah.*.jumlah_kelas" => "required|integer|min:1",
+            "mata_kuliah.*.total_sks" => "required|integer|min:1",
             "catatan" => "nullable|string",
-            "save_as_draft" => "nullable|boolean",
+            "status_id" => "required|exists:status,id",
         ]);
 
-        // Check for duplicates
-        $exists = SuratTugasMengajar::where([
-            "dosen_id" => $validated["dosen_id"],
-            "mata_kuliah_id" => $validated["mata_kuliah_id"],
-            "kelas_id" => $validated["kelas_id"],
-            "semester_id" => $validated["semester_id"]
-        ])->exists();
-
-        if ($exists) {
-            return back()
-                ->withInput()
-                ->with("error", "Surat tugas untuk kombinasi ini sudah ada.");
-        }
-
         try {
-            // Generate nomor surat
-            $tahun = date("Y");
-            $count = SuratTugasMengajar::whereYear("created_at", $tahun)->count() + 1;
-            $validated["nomor_surat"] = sprintf("%03d/STM-FT.UNPAM/%d", $count, $tahun);
+            $createdCount = 0;
+            $errors = [];
             
-            // Set initial status based on save_as_draft option
-            if ($request->input('save_as_draft')) {
-                $validated["status_id"] = 6; // draft
-                $successMessage = "Surat tugas berhasil disimpan sebagai draft.";
-            } else {
-                $validated["status_id"] = 3; // pending approval  
-                $successMessage = "Surat tugas berhasil dibuat dan menunggu approval.";
+            foreach ($validated["mata_kuliah"] as $mk) {
+                // Check for duplicates
+                $exists = SuratTugasMengajar::where([
+                    "dosen_id" => $validated["dosen_id"],
+                    "mata_kuliah_id" => $mk["mata_kuliah_id"],
+                    "kelas_id" => $mk["kelas_id"],
+                    "semester_id" => $validated["semester_id"]
+                ])->exists();
+
+                if ($exists) {
+                    $mataKuliah = MataKuliah::find($mk["mata_kuliah_id"]);
+                    $kelas = Kelas::find($mk["kelas_id"]);
+                    $errors[] = "Surat tugas untuk {$mataKuliah->nama} - {$kelas->nama} sudah ada.";
+                    continue;
+                }
+
+                // Generate nomor surat
+                $tahun = date("Y");
+                $count = SuratTugasMengajar::whereYear("created_at", $tahun)->count() + 1;
+                $nomorSurat = sprintf("%03d/STM-FT.UNPAM/%d", $count, $tahun);
+                
+                // Create surat tugas
+                SuratTugasMengajar::create([
+                    "nomor_surat" => $nomorSurat,
+                    "dosen_id" => $validated["dosen_id"],
+                    "mata_kuliah_id" => $mk["mata_kuliah_id"],
+                    "kelas_id" => $mk["kelas_id"],
+                    "semester_id" => $validated["semester_id"],
+                    "catatan" => $validated["catatan"] ?? null,
+                    "status_id" => $validated["status_id"],
+                ]);
+                
+                $createdCount++;
             }
 
-            SuratTugasMengajar::create($validated);
-
-            return redirect()
-                ->route("surat-tugas.index")
-                ->with("success", $successMessage);
+            if ($createdCount > 0) {
+                $message = "Berhasil membuat {$createdCount} surat tugas.";
+                if (!empty($errors)) {
+                    $message .= " " . implode(" ", $errors);
+                }
+                return redirect()
+                    ->route("surat-tugas.index")
+                    ->with("success", $message);
+            } else {
+                return back()
+                    ->withInput()
+                    ->with("error", implode(" ", $errors));
+            }
 
         } catch (\Exception $e) {
+            Log::error("Error creating surat tugas: " . $e->getMessage());
             return back()
                 ->withInput()
                 ->with("error", "Gagal membuat surat tugas: " . $e->getMessage());
