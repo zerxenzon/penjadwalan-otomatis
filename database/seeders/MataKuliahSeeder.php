@@ -14,7 +14,7 @@ class MataKuliahSeeder extends Seeder
 {
     public function run(): void
     {
-        DB::table('mata_kuliah')->insert([
+        $mataKuliahs = [
             [
                 'nama' => 'Pemrograman Web 2',
                 'kode' => 'MK001',
@@ -28,8 +28,8 @@ class MataKuliahSeeder extends Seeder
                 'nama' => 'Basis Data Lanjut',
                 'kode' => 'MK002',
                 'sks' => 3,
-                'prodi_id' => 1, // Sistem Informasi
-                'status_id' => 1, // Aktif
+                'prodi_id' => 1,
+                'status_id' => 1,
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
@@ -37,8 +37,8 @@ class MataKuliahSeeder extends Seeder
                 'nama' => 'Sistem Operasi',
                 'kode' => 'MK003',
                 'sks' => 3,
-                'prodi_id' => 1, // Sistem Informasi
-                'status_id' => 1, // Aktif
+                'prodi_id' => 1,
+                'status_id' => 1,
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
@@ -46,8 +46,8 @@ class MataKuliahSeeder extends Seeder
                 'nama' => 'Jaringan Komputer',
                 'kode' => 'MK004',
                 'sks' => 3,
-                'prodi_id' => 1, // Sistem Informasi
-                'status_id' => 1, // Aktif
+                'prodi_id' => 1,
+                'status_id' => 1,
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
@@ -55,8 +55,8 @@ class MataKuliahSeeder extends Seeder
                 'nama' => 'Keamanan Informasi',
                 'kode' => 'MK005',
                 'sks' => 2,
-                'prodi_id' => 1, // Sistem Informasi
-                'status_id' => 1, // Aktif
+                'prodi_id' => 1,
+                'status_id' => 1,
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
@@ -65,10 +65,18 @@ class MataKuliahSeeder extends Seeder
                 'kode' => 'MK006',
                 'sks' => 3,
                 'prodi_id' => 2, // Teknik Informatika
-                'status_id' => 1, // Aktif
+                'status_id' => 1,
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
-        ]);
+        ];
+
+        // Insert mata kuliah satu per satu untuk menghindari error duplikasi
+        foreach ($mataKuliahs as $mk) {
+            // Cek apakah mata kuliah dengan kode tersebut sudah ada
+            if (!DB::table('mata_kuliah')->where('kode', $mk['kode'])->exists()) {
+                DB::table('mata_kuliah')->insert($mk);
+            }
+        }
     }
 }

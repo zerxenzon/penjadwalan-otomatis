@@ -15,7 +15,10 @@ return new class extends Migration
     {
         Schema::create('jadwal', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('surat_tugas_mengajar_id');
+            $table->foreignId('surat_tugas_mengajar_id')->nullable()
+                  ->constrained('surat_tugas_mengajar')
+                  ->nullOnDelete()
+                  ->cascadeOnUpdate();
             $table->unsignedBigInteger('ruangan_id');
             $table->unsignedBigInteger('shift_id');
             $table->enum('hari', ['senin', 'selasa', 'rabu', 'kamis', 'jumat', 'sabtu']);
@@ -25,7 +28,6 @@ return new class extends Migration
             $table->timestamps();
 
             $table->unique(['surat_tugas_mengajar_id', 'hari', 'jam_mulai']);
-            $table->foreign('surat_tugas_mengajar_id')->references('id')->on('surat_tugas_mengajar')->onDelete('cascade')->onUpdate('cascade');
             $table->foreign('ruangan_id')->references('id')->on('ruangan')->onDelete('cascade')->onUpdate('cascade');
             $table->foreign('shift_id')->references('id')->on('shift')->onDelete('cascade')->onUpdate('cascade');
             $table->foreign('status_id')->references('id')->on('status')->onDelete('cascade')->onUpdate('cascade');

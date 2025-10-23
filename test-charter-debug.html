@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Charter Debug</title>
+</head>
+<body>
+    <h2>Test Form Submit</h2>
+    <form id="testForm" action="http://127.0.0.1:8000/charter-jadwal" method="POST">
+        <input type="hidden" name="_token" value="TEST_TOKEN">
+        <input type="hidden" name="jadwal_id" id="jadwalId" value="">
+        <input type="hidden" name="semester_id" value="1">
+        <input type="text" name="mata_kuliah_id" placeholder="Mata Kuliah ID" value="2">
+        <input type="text" name="kelas_id" placeholder="Kelas ID" value="1">
+        <button type="button" onclick="setJadwal()">Set Jadwal ID</button>
+        <button type="submit">Submit</button>
+    </form>
+    
+    <div id="output"></div>
+    
+    <script>
+        function setJadwal() {
+            document.getElementById('jadwalId').value = '1';
+            document.getElementById('output').innerHTML = 'Jadwal ID set to: ' + document.getElementById('jadwalId').value;
+            console.log('Jadwal ID:', document.getElementById('jadwalId').value);
+        }
+        
+        document.getElementById('testForm').addEventListener('submit', function(e) {
+            console.log('Form data:', new FormData(this));
+            const jadwalId = document.getElementById('jadwalId').value;
+            console.log('Jadwal ID on submit:', jadwalId);
+            
+            if (!jadwalId) {
+                alert('Jadwal ID is empty!');
+                e.preventDefault();
+            }
+        });
+    </script>
+</body>
+</html>

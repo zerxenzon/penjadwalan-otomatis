@@ -3,179 +3,182 @@
 @section('title', 'Barter Jadwal')
 
 @section('dashboard-content')
-    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-        <h1 class="h2">Barter Jadwal</h1>
-        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalBarterJadwal">
-            Ajukan Barter Jadwal
-        </button>
-    </div>
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3">Barter Jadwal</h1>
+    <a href="{{ route('barter-jadwal.create') }}" class="btn btn-primary">
+        <i class="bi bi-plus-circle me-1"></i> Ajukan Barter
+    </a>
+</div>
 
-    @if(session('success'))
+<!-- Status Messages -->
+@if(session('success'))
     <div class="alert alert-success alert-dismissible fade show" role="alert">
-        {{ session('success') }}
+        <i class="bi bi-check-circle me-1"></i> {{ session('success') }}
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
-    @endif
+@endif
 
-    <div class="card">
-        <div class="card-body">
-            <h5 class="card-title mb-3">Daftar Pengajuan Barter Jadwal</h5>
-            <div class="table-responsive">
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th>No</th>
-                            <th>Tanggal Pengajuan</th>
-                            <th>Dosen Pengaju</th>
-                            <th>Jadwal Yang Ditukar</th>
-                            <th>Dosen Tujuan</th>
-                            <th>Jadwal Yang Diminta</th>
-                            <th>Status</th>
-                            <th>Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse($barterList as $index => $barter)
-                        <tr>
-                            <td>{{ $index + 1 }}</td>
-                            <td>{{ $barter->created_at->format('d/m/Y H:i') }}</td>
-                            <td>{{ $barter->dosenPengaju->biodata->nama }}</td>
-                            <td>
-                                {{ $barter->jadwalPengaju->suratTugasMengajar->mataKuliah->nama }} -
-                                {{ $barter->jadwalPengaju->suratTugasMengajar->kelas->nama }}
-                                <br>
-                                <small class="text-muted">
-                                    {{ $barter->jadwalPengaju->hari }},
-                                    {{ $barter->jadwalPengaju->jam_mulai }} - {{ $barter->jadwalPengaju->jam_selesai }}
-                                </small>
-                            </td>
-                            <td>{{ $barter->dosenTujuan->biodata->nama }}</td>
-                            <td>
-                                {{ $barter->jadwalTujuan->mataKuliah->nama }} -
-                                {{ $barter->jadwalTujuan->kelas->nama }}
-                                <br>
-                                <small class="text-muted">
-                                    {{ $barter->jadwalTujuan->shift->hari }},
-                                    {{ $barter->jadwalTujuan->shift->jam_mulai }} - {{ $barter->jadwalTujuan->shift->jam_selesai }}
-                                </small>
-                            </td>
-                            <td>
-                                @if($barter->status_id == 1)
-                                    <span class="badge bg-warning">Pending</span>
-                                @elseif($barter->status_id == 2)
-                                    <span class="badge bg-success">Disetujui</span>
-                                @else
-                                    <span class="badge bg-danger">Ditolak</span>
-                                @endif
-                            </td>
-                            <td>
-                                @if($barter->dosen_tujuan_id == auth()->id() && $barter->status_id == 1)
-                                <div class="btn-group" role="group">
-                                    <form action="{{ route('barter-jadwal.update-status', $barter->id) }}" method="POST" class="d-inline">
-                                        @csrf
-                                        <input type="hidden" name="status_id" value="2">
-                                        <button type="submit" class="btn btn-sm btn-success me-1">Setuju</button>
-                                    </form>
-                                    <form action="{{ route('barter-jadwal.update-status', $barter->id) }}" method="POST" class="d-inline">
-                                        @csrf
-                                        <input type="hidden" name="status_id" value="3">
-                                        <button type="submit" class="btn btn-sm btn-danger">Tolak</button>
-                                    </form>
-                                </div>
-                                @endif
-                            </td>
-                        </tr>
-                        @empty
-                        <tr>
-                            <td colspan="8" class="text-center">Tidak ada pengajuan barter jadwal</td>
-                        </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
-        </div>
+@if(session('error'))
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="bi bi-exclamation-triangle me-1"></i> {{ session('error') }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+@endif
+
+<!-- Barter Masuk -->
+<div class="card mb-4">
+    <div class="card-header bg-white">
+        <h5 class="card-title mb-0">
+            <i class="bi bi-arrow-down-circle text-primary me-2"></i>
+            Permintaan Barter Masuk
+        </h5>
+        <p class="text-muted small mb-0">Permintaan barter dari dosen lain yang ditujukan untuk Anda</p>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-hover table-striped mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>Dosen Pengaju</th>
+                    <th>Jadwal yang Ditawarkan</th>
+                    <th>Jadwal yang Diminta</th>
+                    <th>Alasan</th>
+                    <th>Status</th>
+                    <th>Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                @php
+                $barterMasuk = $barterList->where('dosen_tujuan_id', Auth::id())->where('status_id', 3);
+                @endphp
+                
+                @forelse ($barterMasuk as $barter)
+                <tr>
+                    <td>{{ $barter->dosenPengaju->biodata->nama ?? $barter->dosenPengaju->username }}</td>
+                    <td>
+                        <strong>{{ $barter->jadwalA->suratTugasMengajar->mataKuliah->nama }}</strong><br>
+                        {{ $barter->jadwalA->suratTugasMengajar->kelas->nama }}<br>
+                        {{ ucfirst($barter->jadwalA->hari) }}, 
+                        {{ \Carbon\Carbon::parse($barter->jadwalA->jam_mulai)->format('H:i') }}-{{ \Carbon\Carbon::parse($barter->jadwalA->jam_selesai)->format('H:i') }}<br>
+                        {{ $barter->jadwalA->ruangan->nama }}
+                    </td>
+                    <td>
+                        <strong>{{ $barter->jadwalB->suratTugasMengajar->mataKuliah->nama }}</strong><br>
+                        {{ $barter->jadwalB->suratTugasMengajar->kelas->nama }}<br>
+                        {{ ucfirst($barter->jadwalB->hari) }}, 
+                        {{ \Carbon\Carbon::parse($barter->jadwalB->jam_mulai)->format('H:i') }}-{{ \Carbon\Carbon::parse($barter->jadwalB->jam_selesai)->format('H:i') }}<br>
+                        {{ $barter->jadwalB->ruangan->nama }}
+                    </td>
+                    <td>{{ $barter->alasan }}</td>
+                    <td>
+                        <span class="badge bg-warning text-dark">
+                            <i class="bi bi-clock"></i> {{ $barter->status->nama }}
+                        </span>
+                    </td>
+                    <td>
+                        <form action="{{ route('barter-jadwal.update-status', $barter->id) }}" method="POST" class="d-inline">
+                            @csrf
+                            @method('PUT')
+                            <input type="hidden" name="status_id" value="4"> <!-- Approved -->
+                            <button type="submit" class="btn btn-sm btn-success" onclick="return confirm('Yakin ingin menyetujui barter jadwal ini?')">
+                                <i class="bi bi-check-circle"></i> Setuju
+                            </button>
+                        </form>
+                        <form action="{{ route('barter-jadwal.update-status', $barter->id) }}" method="POST" class="d-inline">
+                            @csrf
+                            @method('PUT')
+                            <input type="hidden" name="status_id" value="5"> <!-- Rejected -->
+                            <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Yakin ingin menolak barter jadwal ini?')">
+                                <i class="bi bi-x-circle"></i> Tolak
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                @empty
+                <tr>
+                    <td colspan="6" class="text-center text-muted py-3">
+                        <i class="bi bi-info-circle me-1"></i> Tidak ada permintaan barter masuk saat ini
+                    </td>
+                </tr>
+                @endforelse
+            </tbody>
+        </table>
     </div>
 </div>
 
-<!-- Modal Barter Jadwal -->
-<div class="modal fade" id="modalBarterJadwal" tabindex="-1">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <form action="{{ route('barter-jadwal.store') }}" method="POST">
-                @csrf
-                <div class="modal-header">
-                    <h5 class="modal-title">Ajukan Barter Jadwal</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label class="form-label">Pilih Jadwal Anda</label>
-                        <select name="jadwal_pengaju_id" class="form-select" required>
-                            <option value="">Pilih Jadwal</option>
-                            @foreach($jadwalSaya as $jadwal)
-                            <option value="{{ $jadwal->id }}">
-                                {{ $jadwal->mataKuliah->nama }} - {{ $jadwal->kelas->nama }}
-                                ({{ $jadwal->shift->hari }}, {{ $jadwal->shift->jam_mulai }} - {{ $jadwal->shift->jam_selesai }})
-                            </option>
-                            @endforeach
-                        </select>
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label">Pilih Dosen Tujuan</label>
-                        <select name="dosen_tujuan_id" class="form-select" required>
-                            <option value="">Pilih Dosen</option>
-                            @foreach($dosenList as $dosen)
-                            <option value="{{ $dosen->id }}">{{ $dosen->biodata->nama }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label">Pilih Jadwal Yang Diinginkan</label>
-                        <select name="jadwal_tujuan_id" class="form-select" required>
-                            <option value="">Pilih Jadwal</option>
-                            <!-- Will be populated via AJAX -->
-                        </select>
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label">Alasan Barter</label>
-                        <textarea name="alasan" class="form-control" rows="3" required></textarea>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                    <button type="submit" class="btn btn-primary">Ajukan Barter</button>
-                </div>
-            </form>
-        </div>
+<!-- Riwayat Barter -->
+<div class="card">
+    <div class="card-header bg-white">
+        <h5 class="card-title mb-0">
+            <i class="bi bi-clock-history text-secondary me-2"></i>
+            Riwayat Barter
+        </h5>
+        <p class="text-muted small mb-0">Semua permintaan barter yang pernah Anda ajukan atau terima</p>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-hover table-striped mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>Tanggal</th>
+                    <th>Dosen</th>
+                    <th>Jadwal Anda</th>
+                    <th>Jadwal Ditukar</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                @php
+                $riwayatBarter = $barterList->where('status_id', '!=', 3);
+                @endphp
+                
+                @forelse ($riwayatBarter as $barter)
+                <tr>
+                    <td>{{ $barter->created_at->format('d/m/Y') }}</td>
+                    <td>
+                        @if($barter->dosen_pengaju_id == Auth::id())
+                            <span class="badge bg-info text-dark">Ke: {{ $barter->dosenTujuan->biodata->nama ?? $barter->dosenTujuan->username }}</span>
+                        @else
+                            <span class="badge bg-info text-dark">Dari: {{ $barter->dosenPengaju->biodata->nama ?? $barter->dosenPengaju->username }}</span>
+                        @endif
+                    </td>
+                    <td>
+                        @if($barter->dosen_pengaju_id == Auth::id())
+                            {{ $barter->jadwalA->suratTugasMengajar->mataKuliah->nama }}<br>
+                            {{ $barter->jadwalA->suratTugasMengajar->kelas->nama }}
+                        @else
+                            {{ $barter->jadwalB->suratTugasMengajar->mataKuliah->nama }}<br>
+                            {{ $barter->jadwalB->suratTugasMengajar->kelas->nama }}
+                        @endif
+                    </td>
+                    <td>
+                        @if($barter->dosen_pengaju_id == Auth::id())
+                            {{ $barter->jadwalB->suratTugasMengajar->mataKuliah->nama }}<br>
+                            {{ $barter->jadwalB->suratTugasMengajar->kelas->nama }}
+                        @else
+                            {{ $barter->jadwalA->suratTugasMengajar->mataKuliah->nama }}<br>
+                            {{ $barter->jadwalA->suratTugasMengajar->kelas->nama }}
+                        @endif
+                    </td>
+                    <td>
+                        @if($barter->status_id == 4)
+                            <span class="badge bg-success">
+                                <i class="bi bi-check-circle"></i> Disetujui
+                            </span>
+                        @else
+                            <span class="badge bg-danger">
+                                <i class="bi bi-x-circle"></i> Ditolak
+                            </span>
+                        @endif
+                    </td>
+                </tr>
+                @empty
+                <tr>
+                    <td colspan="5" class="text-center text-muted py-3">
+                        <i class="bi bi-info-circle me-1"></i> Belum ada riwayat barter
+                    </td>
+                </tr>
+                @endforelse
+            </tbody>
+        </table>
     </div>
 </div>
-
-@push('scripts')
-<script>
-document.querySelector('select[name="dosen_tujuan_id"]').addEventListener('change', function() {
-    const dosenId = this.value;
-    const jadwalTujuanSelect = document.querySelector('select[name="jadwal_tujuan_id"]');
-    
-    if (dosenId) {
-        // Clear current options
-        jadwalTujuanSelect.innerHTML = '<option value="">Pilih Jadwal</option>';
-        
-        // Fetch jadwal for selected dosen via AJAX
-        fetch(`/api/dosen/${dosenId}/jadwal`)
-            .then(response => response.json())
-            .then(jadwalList => {
-                jadwalList.forEach(jadwal => {
-                    const option = document.createElement('option');
-                    option.value = jadwal.id;
-                    option.textContent = `${jadwal.mata_kuliah.nama} - ${jadwal.kelas.nama} (${jadwal.shift.hari}, ${jadwal.shift.jam_mulai} - ${jadwal.shift.jam_selesai})`;
-                    jadwalTujuanSelect.appendChild(option);
-                });
-            });
-    }
-});
-</script>
-@endpush
 @endsection

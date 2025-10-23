@@ -8,6 +8,31 @@
     <span class="text-muted">{{ now()->format('d F Y') }}</span>
 </div>
 
+<!-- Notifikasi Permintaan Pindah Jadwal Baru -->
+@if(isset($recent_requests) && $recent_requests->count() > 0)
+<div class="alert alert-warning alert-dismissible fade show shadow-sm" role="alert">
+    <h5 class="alert-heading"><i class="bi bi-exclamation-triangle-fill"></i> Ada Permintaan Pindah Jadwal Baru!</h5>
+    <p class="mb-2">Dosen telah mengajukan permintaan pindah jadwal:</p>
+    <ul class="mb-0">
+        @foreach($recent_requests as $request)
+        <li>
+            <strong>{{ $request->dosen->nama ?? 'N/A' }}</strong> 
+            - {{ $request->jadwalLama->suratTugasMengajar->mataKuliah->nama ?? 'N/A' }}
+            ({{ $request->jadwalLama->suratTugasMengajar->kelas->nama ?? 'N/A' }})
+            <small class="text-muted">({{ $request->created_at->diffForHumans() }})</small>
+        </li>
+        @endforeach
+    </ul>
+    <hr>
+    <p class="mb-0">
+        <a href="{{ route('pindah-jadwal.index') }}" class="btn btn-sm btn-warning">
+            <i class="bi bi-check-circle"></i> Review Permintaan Sekarang
+        </a>
+    </p>
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+</div>
+@endif
+
 <!-- Statistics -->
 <div class="row mb-4">
     <div class="col-md-4">
@@ -44,8 +69,11 @@
         <h5 class="mb-0">Aksi Utama</h5>
     </div>
     <div class="card-body">
-        <a href="{{ route('pindah-jadwal.index') }}" class="btn btn-primary">
+        <a href="{{ route('pindah-jadwal.index') }}" class="btn btn-primary me-2">
             <i class="bi bi-check-circle"></i> Lihat Permintaan Pindah Jadwal
+        </a>
+        <a href="{{ route('kosma.jadwal-kelas') }}" class="btn btn-success">
+            <i class="bi bi-calendar3"></i> Lihat Jadwal Kelas
         </a>
     </div>
 </div>

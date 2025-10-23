@@ -19,10 +19,22 @@ class Shift extends Model
         'status_id',
     ];
 
+    // Change these invalid 'time' casts to 'datetime'
     protected $casts = [
-        'jam_mulai' => 'time',
-        'jam_selesai' => 'time',
+        'jam_mulai' => 'datetime',
+        'jam_selesai' => 'datetime',
     ];
+
+    // Add accessor methods to format the time
+    public function getJamMulaiFormattedAttribute()
+    {
+        return $this->jam_mulai ? $this->jam_mulai->format('H:i') : '';
+    }
+
+    public function getJamSelesaiFormattedAttribute()
+    {
+        return $this->jam_selesai ? $this->jam_selesai->format('H:i') : '';
+    }
 
     public function status()
     {

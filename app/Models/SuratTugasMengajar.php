@@ -2,13 +2,10 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class SuratTugasMengajar extends Model
 {
-    use HasFactory;
-
     protected $table = 'surat_tugas_mengajar';
 
     protected $fillable = [
@@ -17,10 +14,10 @@ class SuratTugasMengajar extends Model
         'kelas_id',
         'semester_id',
         'status_id',
-        'catatan',
-        'nomor_surat',
+        'nomor_surat'
     ];
 
+    // Relations
     public function dosen()
     {
         return $this->belongsTo(User::class, 'dosen_id');
@@ -48,12 +45,7 @@ class SuratTugasMengajar extends Model
 
     public function jadwal()
     {
-        return $this->hasMany(Jadwal::class, 'surat_tugas_mengajar_id');
-    }
-
-    public function barterJadwal()
-    {
-        return $this->hasManyThrough(BarterJadwal::class, Jadwal::class, 'surat_tugas_mengajar_id', 'jadwal_id');
+        return $this->hasOne(Jadwal::class, 'surat_tugas_mengajar_id');
     }
 }
 

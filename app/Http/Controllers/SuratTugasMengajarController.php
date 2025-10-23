@@ -10,19 +10,39 @@ use App\Models\Semester;
 use App\Models\Status;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Barryvdh\DomPDF\Facade\Pdf;
 
 class SuratTugasMengajarController extends Controller
 {
     /**
-     * Check if user has permission as dekan
-     * @throws \Illuminate\Auth\Access\AuthorizationException
+     * Check if user is Dekan
      */
     protected function checkDekanPermission()
     {
-        if (Auth::user()->role->nama !== "dekan") {
-            throw new \Illuminate\Auth\Access\AuthorizationException("Hanya Dekan yang dapat melakukan aksi ini.");
+        if (!Auth::check() || !Auth::user()->role || Auth::user()->role->nama !== 'dekan') {
+            abort(403, 'Hanya Dekan yang dapat mengakses fitur ini.');
         }
+    }
+
+    /**
+     * Validate ownership of Surat Tugas (for dosen viewing their own)
+     */
+    protected function validateOwnership(SuratTugasMengajar $suratTugas)
+    {
+        $user = Auth::user();
+        
+        // Dekan dan Kaprodi bisa akses semua
+        if (in_array($user->role->nama, ['dekan', 'kaprodi'])) {
+            return true;
+        }
+        
+        // Dosen hanya bisa akses milik sendiri
+        if ($user->role->nama === 'dosen' && $suratTugas->dosen_id !== $user->id) {
+            abort(403, 'Anda tidak memiliki akses ke surat tugas ini.');
+        }
+        
+        return true;
     }
 
     /**
@@ -75,6 +95,8 @@ class SuratTugasMengajarController extends Controller
      */
     public function create()
     {
+        $this->checkDekanPermission();
+
         $dosen = User::whereHas('role', function($query) {
                 $query->where('nama', 'dosen');
             })
@@ -105,12 +127,15 @@ class SuratTugasMengajarController extends Controller
      */
     public function store(Request $request)
     {
+        $this->checkDekanPermission();
+
         $validated = $request->validate([
             "dosen_id" => "required|exists:user,id",
             "mata_kuliah_id" => "required|exists:mata_kuliah,id",
             "kelas_id" => "required|exists:kelas,id",
             "semester_id" => "required|exists:semester,id",
             "catatan" => "nullable|string",
+            "save_as_draft" => "nullable|boolean",
         ]);
 
         // Check for duplicates
@@ -133,14 +158,20 @@ class SuratTugasMengajarController extends Controller
             $count = SuratTugasMengajar::whereYear("created_at", $tahun)->count() + 1;
             $validated["nomor_surat"] = sprintf("%03d/STM-FT.UNPAM/%d", $count, $tahun);
             
-            // Set initial status
-            $validated["status_id"] = 3; // pending approval
+            // Set initial status based on save_as_draft option
+            if ($request->input('save_as_draft')) {
+                $validated["status_id"] = 6; // draft
+                $successMessage = "Surat tugas berhasil disimpan sebagai draft.";
+            } else {
+                $validated["status_id"] = 3; // pending approval  
+                $successMessage = "Surat tugas berhasil dibuat dan menunggu approval.";
+            }
 
             SuratTugasMengajar::create($validated);
 
             return redirect()
                 ->route("surat-tugas.index")
-                ->with("success", "Surat tugas berhasil dibuat.");
+                ->with("success", $successMessage);
 
         } catch (\Exception $e) {
             return back()
@@ -186,18 +217,41 @@ class SuratTugasMengajarController extends Controller
             
             $suratTugas = SuratTugasMengajar::findOrFail($id);
 
-            if ($suratTugas->status_id !== 3) { // must be pending
+            if ($suratTugas->status_id !== 3) {
                 return redirect()->back()
                     ->with("error", "Hanya surat tugas pending yang bisa di-approve.");
             }
 
             $suratTugas->update(["status_id" => 4]); // set to approved
 
+            // TODO: Send WhatsApp notification to dosen
+            // Implementasi notifikasi WhatsApp bisa menggunakan:
+            // - Twilio API
+            // - WhatsApp Business API
+            // - Fonnte (Indonesia)
+            // - Wablas (Indonesia)
+            //
+            // Contoh implementasi:
+            // $dosen = $suratTugas->dosen;
+            // $phone = $dosen->biodata->nomor_telepon;
+            // $message = "Surat Tugas Mengajar Anda telah disetujui oleh Dekan.\n\n"
+            //          . "Mata Kuliah: {$suratTugas->mataKuliah->nama}\n"
+            //          . "Kelas: {$suratTugas->kelas->nama}\n"
+            //          . "Silakan login ke sistem untuk melihat detail.";
+            // WhatsAppService::send($phone, $message);
+            
+            Log::info("STM Approved", [
+                'stm_id' => $suratTugas->id,
+                'dosen_id' => $suratTugas->dosen_id,
+                'dosen_phone' => $suratTugas->dosen->biodata->nomor_telepon ?? 'N/A',
+                'message' => 'WhatsApp notification should be sent here'
+            ]);
+
             return redirect()
                 ->route("surat-tugas.index")
-                ->with("success", "Surat tugas berhasil di-approve.");
+                ->with("success", "Surat tugas berhasil di-approve. Notifikasi akan dikirim ke dosen.");
 
-        } catch (\Illuminate\Auth\Access\AuthorizationException $e) {
+        } catch (\Exception $e) {
             return redirect()->back()->with("error", $e->getMessage());
         }
     }
@@ -223,10 +277,8 @@ class SuratTugasMengajarController extends Controller
             
             return back()->with("success", "Surat tugas berhasil " . $message);
 
-        } catch (\Illuminate\Auth\Access\AuthorizationException $e) {
-            return back()->with("error", $e->getMessage());
         } catch (\Exception $e) {
-            return back()->with("error", "Gagal mengubah status: " . $e->getMessage());
+            return back()->with("error", $e->getMessage());
         }
     }
 
@@ -269,7 +321,7 @@ class SuratTugasMengajarController extends Controller
     protected function generatePdf($id, $action = "stream")
     {
         $suratTugas = SuratTugasMengajar::with([
-            "dosen.biodata",
+            "dosen.biodata", // Pastikan biodata dimuat
             "dosen.role",
             "mataKuliah.prodi",
             "kelas",

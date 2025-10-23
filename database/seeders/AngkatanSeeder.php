@@ -13,7 +13,7 @@ class AngkatanSeeder extends Seeder
 {
     public function run(): void
     {
-        DB::table('angkatan')->insert([
+        $angkatans = [
             [
                 'tahun' => 2022,
                 'status_id' => 1, // Aktif
@@ -38,7 +38,18 @@ class AngkatanSeeder extends Seeder
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
-        ]);
+        ];
+
+        // Insert angkatan satu per satu dengan pengecekan duplikat
+        foreach ($angkatans as $angkatan) {
+            // Cek apakah kombinasi tahun dan status_id sudah ada
+            if (!DB::table('angkatan')->where([
+                'tahun' => $angkatan['tahun'],
+                'status_id' => $angkatan['status_id']
+            ])->exists()) {
+                DB::table('angkatan')->insert($angkatan);
+            }
+        }
     }
 }
 

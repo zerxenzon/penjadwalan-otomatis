@@ -20,6 +20,7 @@ class User extends Authenticatable
         'password',
         'role_id',
         'status_id',
+        'is_dekan', // tambahkan ini
     ];
 
     protected $hidden = [
@@ -30,6 +31,7 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
+        'is_dekan' => 'boolean', // tambahkan ini
     ];
 
     // Relationships
@@ -92,5 +94,10 @@ class User extends Authenticatable
         public function isKaprodiOrDekan()
         {
             return $this->role && in_array($this->role->nama, ['kaprodi', 'dekan']);
+        }
+
+        public function isKaprodiAndDekan(): bool
+        {
+            return $this->hasRole('kaprodi') && $this->is_dekan;
         }
 }

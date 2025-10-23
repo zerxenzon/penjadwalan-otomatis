@@ -14,7 +14,7 @@ class ProdiSeeder extends Seeder
 {
     public function run(): void
     {
-        DB::table('prodi')->insert([
+        $prodis = [
             [
                 'nama' => 'Sistem Informasi',
                 'kode' => 'SI',
@@ -39,7 +39,15 @@ class ProdiSeeder extends Seeder
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
-        ]);
+        ];
+
+        // Insert prodi satu per satu dengan pengecekan duplikat
+        foreach ($prodis as $prodi) {
+            // Cek apakah prodi dengan kode tersebut sudah ada
+            if (!DB::table('prodi')->where('kode', $prodi['kode'])->exists()) {
+                DB::table('prodi')->insert($prodi);
+            }
+        }
     }
 }
 

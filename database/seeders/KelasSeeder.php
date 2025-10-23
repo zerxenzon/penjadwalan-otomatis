@@ -14,7 +14,7 @@ class KelasSeeder extends Seeder
 {
     public function run(): void
     {
-        DB::table('kelas')->insert([
+        $kelasList = [
             [
                 'nama' => 'SI-R-SM3-20251',
                 'angkatan_id' => 4, // 2025
@@ -55,6 +55,14 @@ class KelasSeeder extends Seeder
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
-        ]);
+        ];
+
+        // Insert kelas satu per satu dengan pengecekan duplikat
+        foreach ($kelasList as $kelas) {
+            // Cek apakah kelas dengan nama tersebut sudah ada
+            if (!DB::table('kelas')->where('nama', $kelas['nama'])->exists()) {
+                DB::table('kelas')->insert($kelas);
+            }
+        }
     }
 }

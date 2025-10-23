@@ -14,7 +14,7 @@ class StatusSeeder extends Seeder
 {
     public function run(): void
     {
-        DB::table('status')->insert([
+        $statuses = [
             [
                 'nama' => 'aktif',
                 'keterangan' => 'Status aktif',
@@ -51,6 +51,14 @@ class StatusSeeder extends Seeder
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
-        ]);
+        ];
+
+        // Insert status satu per satu untuk menghindari error duplikasi
+        foreach ($statuses as $status) {
+            // Cek apakah status sudah ada
+            if (!DB::table('status')->where('nama', $status['nama'])->exists()) {
+                DB::table('status')->insert($status);
+            }
+        }
     }
 }

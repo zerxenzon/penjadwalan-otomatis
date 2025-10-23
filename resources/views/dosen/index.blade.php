@@ -46,14 +46,21 @@
                     <th>Email</th>
                     <th>Telepon</th>
                     <th width="10%">Status</th>
-                    <th width="10%">Aksi</th>
+                    <th width="15%">Aksi</th>
                 </tr>
             </thead>
             <tbody>
                 @forelse ($dosen as $d)
                     <tr>
                         <td>{{ ($dosen->currentPage() - 1) * 10 + $loop->iteration }}</td>
-                        <td><strong>{{ $d->nama }}</strong></td>
+                        <td>
+                            <strong>{{ $d->nama }}</strong>
+                            @if($d->is_dekan)
+                                <span class="badge bg-warning text-dark ms-2">
+                                    <i class="bi bi-star-fill"></i> Dekan
+                                </span>
+                            @endif
+                        </td>
                         <td>{{ $d->biodata?->nip ?? '-' }}</td>
                         <td>{{ $d->email }}</td>
                         <td>{{ $d->biodata?->nomor_telepon ?? '-' }}</td>
@@ -63,9 +70,37 @@
                             </span>
                         </td>
                         <td>
-                            <a href="{{ route('dosen.lihat', $d->id) }}" class="btn btn-sm btn-info" title="Lihat Detail">
-                                <i class="bi bi-eye"></i>
-                            </a>
+                            <div class="btn-group" role="group">
+                                <a href="{{ route('dosen.show', $d->id) }}" class="btn btn-sm btn-info" title="Lihat Detail">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                                
+                                <a href="{{ route('dosen.edit', $d->id) }}" class="btn btn-sm btn-warning" title="Edit Dosen">
+                                    <i class="bi bi-pencil-square"></i>
+                                </a>
+                                
+                                <form action="{{ route('dosen.destroy', $d->id) }}" method="POST" class="d-inline" 
+                                      onsubmit="return confirm('Yakin ingin menghapus dosen ini? Data yang terkait akan ikut terhapus.');">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-sm btn-danger" title="Hapus Dosen">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </form>
+                                
+                                @if($d->hasRole('kaprodi'))
+                                    <form action="{{ route('dosen.toggle-dekan', $d->id) }}" method="POST" class="d-inline">
+                                        @csrf
+                                        @method('PATCH')
+                                        <button type="submit" 
+                                                class="btn btn-sm {{ $d->is_dekan ? 'btn-warning' : 'btn-secondary' }}" 
+                                                onclick="return confirm('Yakin ingin {{ $d->is_dekan ? 'menghapus tanda' : 'menandai' }} sebagai Dekan?')"
+                                                title="{{ $d->is_dekan ? 'Hapus Tanda Dekan' : 'Tandai Sebagai Dekan' }}">
+                                            <i class="bi bi-star{{ $d->is_dekan ? '-fill' : '' }}"></i>
+                                        </button>
+                                    </form>
+                                @endif
+                            </div>
                         </td>
                     </tr>
                 @empty

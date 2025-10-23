@@ -43,6 +43,19 @@
     <div class="row">
         <!-- Sidebar -->
         <nav class="col-md-2 d-md-block bg-light sidebar">
+            @if(session('success'))
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                {{ session('success') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            @endif
+            
+            @if(session('error'))
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                {{ session('error') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            @endif
             <div class="position-sticky pt-3">
                 <!-- User Info -->
                 <div class="px-3 mb-4">
@@ -107,6 +120,14 @@
                             <h6 class="sidebar-heading px-3 mt-2 mb-2">Menu Dosen</h6>
                             
                             <li class="nav-item">
+                                <a href="/charter-jadwal" 
+                                   class="nav-link {{ request()->is('charter-jadwal*') ? 'active' : '' }}">
+                                    <i class="bi bi-calendar-plus me-2"></i>
+                                    Charter Jadwal
+                                </a>
+                            </li>
+
+                            <li class="nav-item">
                                 <a href="/barter-jadwal" 
                                    class="nav-link {{ request()->is('barter-jadwal*') ? 'active' : '' }}">
                                     <i class="bi bi-arrow-left-right me-2"></i>
@@ -115,8 +136,16 @@
                             </li>
 
                             <li class="nav-item">
+                                <a href="{{ route('pindah-jadwal.dosen-index') }}" 
+                                   class="nav-link {{ request()->routeIs('pindah-jadwal.dosen-index') || request()->routeIs('pindah-jadwal.create') ? 'active' : '' }}">
+                                    <i class="bi bi-clock-history me-2"></i>
+                                    Pindah Jadwal
+                                </a>
+                            </li>
+
+                            <li class="nav-item">
                                 <a href="/jadwal" 
-                                   class="nav-link {{ request()->is('jadwal*') ? 'active' : '' }}">
+                                   class="nav-link {{ request()->is('jadwal*') && !request()->routeIs('pindah-jadwal.*') ? 'active' : '' }}">
                                     <i class="bi bi-calendar-week me-2"></i>
                                     Jadwal Mengajar
                                 </a>
@@ -128,7 +157,22 @@
                     @if(auth()->user()->role->nama === 'kosma')
                         <div class="nav-section">
                             <h6 class="sidebar-heading px-3 mt-2 mb-2">Menu Kosma</h6>
-                            <!-- Add Kosma specific menu items here -->
+                            
+                            <li class="nav-item">
+                                <a href="{{ route('pindah-jadwal.index') }}" 
+                                   class="nav-link {{ request()->routeIs('pindah-jadwal.*') ? 'active' : '' }}">
+                                    <i class="bi bi-clock-history me-2"></i>
+                                    Permintaan Pindah Jadwal
+                                </a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a href="{{ route('kosma.jadwal-kelas') }}" 
+                                   class="nav-link {{ request()->routeIs('kosma.jadwal-kelas') ? 'active' : '' }}">
+                                    <i class="bi bi-calendar3 me-2"></i>
+                                    Jadwal Kelas
+                                </a>
+                            </li>
                         </div>
                     @endif
 
@@ -136,7 +180,22 @@
                     @if(auth()->user()->role->nama === 'mahasiswa')
                         <div class="nav-section">
                             <h6 class="sidebar-heading px-3 mt-2 mb-2">Menu Mahasiswa</h6>
-                            <!-- Add Mahasiswa specific menu items here -->
+                            
+                            <li class="nav-item">
+                                <a href="{{ route('dashboard.mahasiswa') }}" 
+                                   class="nav-link {{ request()->routeIs('dashboard.mahasiswa') ? 'active' : '' }}">
+                                    <i class="bi bi-calendar-week me-2"></i>
+                                    Jadwal Kuliah
+                                </a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a href="{{ route('mahasiswa.jadwal.pdf') }}" 
+                                   class="nav-link" target="_blank">
+                                    <i class="bi bi-file-earmark-pdf me-2"></i>
+                                    Export PDF
+                                </a>
+                            </li>
                         </div>
                     @endif
 
@@ -144,7 +203,46 @@
                     @if(auth()->user()->role->nama === 'sekprodi')
                         <div class="nav-section">
                             <h6 class="sidebar-heading px-3 mt-2 mb-2">Menu Sekprodi</h6>
-                            <!-- Add Sekprodi specific menu items here -->
+                            
+                            <li class="nav-item">
+                                <a href="/mata-kuliah" 
+                                   class="nav-link {{ request()->is('mata-kuliah*') ? 'active' : '' }}">
+                                    <i class="bi bi-book me-2"></i>
+                                    Mata Kuliah
+                                </a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a href="/kelas" 
+                                   class="nav-link {{ request()->is('kelas*') ? 'active' : '' }}">
+                                    <i class="bi bi-people me-2"></i>
+                                    Kelas
+                                </a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a href="/ruangan" 
+                                   class="nav-link {{ request()->is('ruangan*') ? 'active' : '' }}">
+                                    <i class="bi bi-building me-2"></i>
+                                    Ruangan
+                                </a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a href="/surat-tugas" 
+                                   class="nav-link {{ request()->is('surat-tugas*') ? 'active' : '' }}">
+                                    <i class="bi bi-file-text me-2"></i>
+                                    Surat Tugas Mengajar
+                                </a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a href="/jadwal" 
+                                   class="nav-link {{ request()->is('jadwal*') ? 'active' : '' }}">
+                                    <i class="bi bi-calendar-week me-2"></i>
+                                    Jadwal Kuliah
+                                </a>
+                            </li>
                         </div>
                     @endif
                 </ul>

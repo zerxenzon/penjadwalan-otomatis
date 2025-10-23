@@ -8,6 +8,31 @@
     <span class="text-muted">{{ now()->format('d F Y') }}</span>
 </div>
 
+<!-- Notifikasi STM Approved -->
+@if(isset($recent_approved_stm) && $recent_approved_stm->count() > 0)
+<div class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
+    <h5 class="alert-heading"><i class="bi bi-check-circle-fill"></i> Surat Tugas Mengajar Disetujui!</h5>
+    <p class="mb-2">Selamat! Surat Tugas Mengajar Anda telah disetujui:</p>
+    <ul class="mb-0">
+        @foreach($recent_approved_stm as $stm)
+        <li>
+            <strong>{{ $stm->mataKuliah->nama ?? 'N/A' }}</strong> 
+            - Kelas {{ $stm->kelas->nama ?? 'N/A' }} 
+            - {{ $stm->semester->nama ?? 'N/A' }}
+            <small class="text-muted">({{ $stm->updated_at->diffForHumans() }})</small>
+        </li>
+        @endforeach
+    </ul>
+    <hr>
+    <p class="mb-0">
+        <a href="{{ route('charter-jadwal.index') }}" class="btn btn-sm btn-success">
+            <i class="bi bi-calendar-plus"></i> Charter Jadwal Sekarang
+        </a>
+    </p>
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+</div>
+@endif
+
 <!-- Statistics -->
 <div class="row mb-4">
     <div class="col-md-3">
@@ -15,6 +40,10 @@
             <div class="card-body">
                 <p class="text-muted fw-bold mb-0">SURAT TUGAS</p>
                 <h3 class="fw-bold text-primary">{{ $total_surat_tugas }}</h3>
+                <small class="text-muted">
+                    <i class="bi bi-check-circle text-success"></i> {{ $surat_tugas_approved ?? 0 }} Approved | 
+                    <i class="bi bi-hourglass-split text-warning"></i> {{ $surat_tugas_pending ?? 0 }} Pending
+                </small>
             </div>
         </div>
     </div>

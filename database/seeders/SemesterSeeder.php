@@ -14,7 +14,7 @@ class SemesterSeeder extends Seeder
 {
     public function run(): void
     {
-        DB::table('semester')->insert([
+        $semesters = [
             [
                 'kode_semester' => 20241,
                 'tipe' => 'ganjil',
@@ -43,6 +43,17 @@ class SemesterSeeder extends Seeder
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
-        ]);
+        ];
+
+        // Insert semester satu per satu dengan pengecekan duplikat
+        foreach ($semesters as $semester) {
+            // Cek kombinasi kode_semester dan tipe yang unik
+            if (!DB::table('semester')->where([
+                'kode_semester' => $semester['kode_semester'],
+                'tipe' => $semester['tipe']
+            ])->exists()) {
+                DB::table('semester')->insert($semester);
+            }
+        }
     }
 }

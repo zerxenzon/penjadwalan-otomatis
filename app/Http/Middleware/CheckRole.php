@@ -34,10 +34,6 @@ class CheckRole
         // Check if the user's role is in the allowed roles array
         if (!in_array($userRole, $roles)) {
             // If user has dosen role and tries to access a route, redirect to dosen dashboard
-            if ($userRole === 'dosen') {
-                return redirect()->route('dashboard.dosen')
-                    ->with('error', 'Anda tidak memiliki akses ke halaman tersebut.');
-            }
             
             // For other roles, redirect to their respective dashboards
             if (Route::has("dashboard.$userRole")) {

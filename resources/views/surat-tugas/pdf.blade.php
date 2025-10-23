@@ -96,8 +96,8 @@
         
         <table style="margin-left: 30px;">
             <tr>
-                <td style="width: 100px">Nama</td>
-                <td style="width: 10px">:</td>
+                <td width="120">Nama</td>
+                <td width="10">:</td>
                 <td>{{ $suratTugas->dosen->nama }}</td>
             </tr>
             <tr>

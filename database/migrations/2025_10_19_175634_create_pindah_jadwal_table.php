@@ -15,14 +15,17 @@ return new class extends Migration
     {
         Schema::create('pindah_jadwal', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('jadwal_id');
+            $table->unsignedBigInteger('jadwal_lama_id');
+            $table->unsignedBigInteger('jadwal_baru_id');
             $table->unsignedBigInteger('dosen_id');
             $table->text('alasan');
             $table->unsignedBigInteger('kosma_id');
             $table->unsignedBigInteger('status_id');
+            $table->text('catatan_kosma')->nullable();
             $table->timestamps();
 
-            $table->foreign('jadwal_id')->references('id')->on('jadwal')->onDelete('cascade')->onUpdate('cascade');
+            $table->foreign('jadwal_lama_id')->references('id')->on('jadwal')->onDelete('cascade')->onUpdate('cascade');
+            $table->foreign('jadwal_baru_id')->references('id')->on('jadwal')->onDelete('cascade')->onUpdate('cascade');
             $table->foreign('dosen_id')->references('id')->on('user')->onDelete('cascade')->onUpdate('cascade');
             $table->foreign('kosma_id')->references('id')->on('user')->onDelete('cascade')->onUpdate('cascade');
             $table->foreign('status_id')->references('id')->on('status')->onDelete('cascade')->onUpdate('cascade');

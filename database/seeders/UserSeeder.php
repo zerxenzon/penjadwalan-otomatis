@@ -1,10 +1,4 @@
 <?php
-// ============================================
-// 3. USER SEEDER
-// ============================================
-// File: database/seeders/UserSeeder.php
-
-
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
@@ -15,88 +9,114 @@ class UserSeeder extends Seeder
 {
     public function run(): void
     {
-        DB::table('user')->insert([
-            // Dekan
+        $users = [
+            // 1. Dekan
             [
-                'nama' => 'dekan Ruuqi',
+                'nama' => 'Dr. Satria',
                 'username' => 'dekan123',
-                'email' => 'dekan@gmail.com',
+                'email' => 'dekan@ruuqi.ac.id',
                 'password' => Hash::make('dekan123'),
-                'role_id' => 3, // Dekan
-                'status_id' => 1, // Aktif
+                'role_id' => 3, // dekan
+                'status_id' => 1, // aktif
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
-
-            // Kaprodi
+            // 2. Kaprodi
             [
-                'nama' => 'kaprodi Ruuqi',
-                'username' => 'kaprodi123',
-                'email' => 'kaprodi@gmail.com',
+                'nama' => 'Dr. Budi Santoso',
+                'username' => 'kaprodi123', 
+                'email' => 'kaprodi@ruuqi.ac.id',
                 'password' => Hash::make('kaprodi123'),
-                'role_id' => 2, // Kaprodi
-                'status_id' => 1, // Aktif
+                'role_id' => 2, // kaprodi
+                'status_id' => 1, // aktif
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
-
-            // Dosen 1
+            // Tambah Sekprodi setelah Kaprodi
             [
-                'nama' => 'dosen Ruuqi',
+                'nama' => 'Dr. Ani Sekprodi', 
+                'username' => 'sekprodi123',
+                'email' => 'sekprodi@ruuqi.ac.id',
+                'password' => Hash::make('sekprodi123'),
+                'role_id' => 5, // sekprodi
+                'status_id' => 1, // aktif
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            // 3. Dosen
+            [
+                'nama' => 'Dr. Ahmad',
                 'username' => 'dosen123',
-                'email' => 'dosen1@gmail.com',
+                'email' => 'dosen@ruuqi.ac.id', 
                 'password' => Hash::make('dosen123'),
-                'role_id' => 4, // Dosen
-                'status_id' => 1, // Aktif
+                'role_id' => 4, // dosen
+                'status_id' => 1, // aktif
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
+            // 4. Muhammad Nurjaman
             [
-                'nama' => 'Muhammad Nurjaman',
-                'username' => 'nurjaman123',
-                'email' => 'nurjaman@gmail.com',
-                'password' => Hash::make('nurjaman123'),
-                'role_id' => 4, // Dosen
-                'status_id' => 1, // Aktif
+                'nama' => 'Muhammad Nurjaman, M.Kom',
+                'username' => 'dosen1234',
+                'email' => 'muhammadnurjaman50@ruuqi.ac.id',
+                'password' => Hash::make('dosen1234'),
+                'role_id' => 4, // dosen
+                'status_id' => 1, // aktif
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
-
-            // KOSMA 1 (Perwakilan Kelas SI-R-SM3)
+            // 5. Muhammad Nurjaman
             [
-                'nama' => 'Kosma Ruuqi',
+                'nama' => 'Iin Sholihin .M.Kom',
+                'username' => 'dosen12345',
+                'email' => 'iinsholihin@ruuqi.ac.id',
+                'password' => Hash::make('dosen12345'),
+                'role_id' => 4, // dosen
+                'status_id' => 1, // aktif
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            // 5. KOSMA
+            [
+                'nama' => 'Agus Mahasiswa',
                 'username' => 'kosma123',
-                'email' => 'kosma1@example.com',
-                'password' => Hash::make('kosma123'),
-                'role_id' => 6, // KOSMA
-                'status_id' => 1, // Aktif
+                'email' => 'kosma@ruuqi.ac.id',
+                'password' => Hash::make('kosma123'), 
+                'role_id' => 6, // kosma
+                'status_id' => 1, // aktif
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
-
-            // KOSMA 2 (Perwakilan Kelas SI-NR-SM3)
+            // 6. Wakil KOSMA
             [
-                'nama' => 'Wakil Kosma Ruuqi',
+                'nama' => 'Budi Mahasiswa',
                 'username' => 'wakilkosma123',
-                'email' => 'kosma2@example.com',
+                'email' => 'wakilkosma@ruuqi.ac.id',
                 'password' => Hash::make('wakilkosma123'),
-                'role_id' => 6, // KOSMA
-                'status_id' => 1, // Aktif
+                'role_id' => 6, // kosma
+                'status_id' => 1, // aktif
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
-
-            // Mahasiswa 1
+            // 7. Mahasiswa
             [
-                'nama' => 'Mahasiswa Ruuqi',
+                'nama' => 'Cahya Mahasiswa',
                 'username' => 'mahasiswa123',
-                'email' => 'ade@example.com',
+                'email' => 'mahasiswa@ruuqi.ac.id',
                 'password' => Hash::make('mahasiswa123'),
-                'role_id' => 1, // Mahasiswa
-                'status_id' => 1, // Aktif
+                'role_id' => 1, // mahasiswa
+                'status_id' => 1, // aktif
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
-        ]);
+        ];
+
+        // Insert user satu per satu untuk menghindari error duplikasi
+        foreach ($users as $user) {
+            // Cek apakah user dengan username tersebut sudah ada
+            if (!DB::table('user')->where('username', $user['username'])->exists()) {
+                DB::table('user')->insert($user);
+            }
+        }
     }
 }

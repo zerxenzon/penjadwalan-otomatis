@@ -263,4 +263,29 @@ class DosenController extends Controller
 
         return view('dosen.export_pdf', compact('dosen'));
     }
+
+    /**
+     * Toggle status dekan untuk user
+     */
+    public function toggleDekan($id)
+    {
+        if (!Auth::user()->role || !in_array(Auth::user()->role->nama, ['kaprodi', 'dekan'])) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $user = User::findOrFail($id);
+        
+        // Pastikan user adalah kaprodi
+        if (!$user->hasRole('kaprodi')) {
+            return back()->with('error', 'Hanya Kaprodi yang dapat ditandai sebagai Dekan.');
+        }
+
+        // Toggle status is_dekan
+        $user->update([
+            'is_dekan' => !$user->is_dekan
+        ]);
+
+        $message = $user->is_dekan ? 'ditandai' : 'dihapus tanda';
+        return back()->with('success', "User berhasil $message sebagai Dekan.");
+    }
 }

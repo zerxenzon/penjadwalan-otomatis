@@ -2,13 +2,10 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Jadwal extends Model
 {
-    use HasFactory;
-
     protected $table = 'jadwal';
 
     protected $fillable = [
@@ -18,46 +15,57 @@ class Jadwal extends Model
         'hari',
         'jam_mulai',
         'jam_selesai',
-        'status_id',
+        'status_id'
     ];
 
+    // PERBAIKAN: Set cast untuk jam dengan format yang konsisten
     protected $casts = [
-        'jam_mulai' => 'time',
-        'jam_selesai' => 'time',
+        'jam_mulai' => 'datetime',
+        'jam_selesai' => 'datetime',
     ];
 
+    // PERBAIKAN: Tambahkan eager loading untuk relasi
+    protected $with = ['ruangan', 'shift', 'status'];
+
+    // Relations
     public function suratTugasMengajar()
     {
+        // PERBAIKAN: Hapus eager loading yang tidak perlu di sini
         return $this->belongsTo(SuratTugasMengajar::class, 'surat_tugas_mengajar_id');
     }
 
     public function ruangan()
     {
-        return $this->belongsTo(Ruangan::class, 'ruangan_id');
+        return $this->belongsTo(Ruangan::class);
     }
 
     public function shift()
     {
-        return $this->belongsTo(Shift::class, 'shift_id');
+        return $this->belongsTo(Shift::class);
     }
 
     public function status()
     {
-        return $this->belongsTo(Status::class, 'status_id');
+        return $this->belongsTo(Status::class);
     }
 
-    public function barterJadwalA()
+    // Scope to get available slots
+    public function scopeAvailable($query)
     {
-        return $this->hasMany(BarterJadwal::class, 'jadwal_dosen_a_id');
+        return $query->whereNull('surat_tugas_mengajar_id');
     }
 
-    public function barterJadwalB()
+    // Scope to get chartered slots for a specific dosen
+    public function scopeCharteredByDosen($query, $dosenId)
     {
-        return $this->hasMany(BarterJadwal::class, 'jadwal_dosen_b_id');
+        return $query->whereHas('suratTugasMengajar', function($q) use ($dosenId) {
+            $q->where('dosen_id', $dosenId);
+        });
     }
-
-    public function pindahJadwal()
+    
+    // Utility method to check if this jadwal belongs to specified dosen
+    public function belongsToDosen($dosenId)
     {
-        return $this->hasMany(PindahJadwal::class, 'jadwal_id');
+        return $this->suratTugasMengajar && $this->suratTugasMengajar->dosen_id == $dosenId;
     }
 }

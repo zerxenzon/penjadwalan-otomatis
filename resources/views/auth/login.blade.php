@@ -64,9 +64,11 @@
         border: none;
         background: none;
         cursor: pointer;
-        padding: 5px;
+        padding: 5px 10px;
         color: #6B7280;
         z-index: 10;
+        font-size: 1rem;
+        transition: color 0.2s ease;
     }
 
     .password-toggle:hover {
@@ -75,6 +77,10 @@
 
     .password-toggle:focus {
         outline: none;
+    }
+
+    .password-toggle i {
+        pointer-events: none;
     }
 
     .form-control {
@@ -188,8 +194,11 @@
                             <strong class="d-inline-block" style="width: 80px;">Dekan:</strong> dekan123 / dekan123<br>
                             <strong class="d-inline-block" style="width: 80px;">Kaprodi:</strong> kaprodi123 / kaprodi123<br>
                             <strong class="d-inline-block" style="width: 80px;">Dosen:</strong> dosen123 / dosen123<br>
+                            <strong class="d-inline-block" style="width: 80px;">Dosen2:</strong> dosen1234 / dosen1234<br>
+                            <strong class="d-inline-block" style="width: 80px;">Dosen2:</strong> dosen12345 / dosen12345<br>
                             <strong class="d-inline-block" style="width: 80px;">KOSMA:</strong> kosma123 / kosma123<br>
-                            <strong class="d-inline-block" style="width: 80px;">Mahasiswa:</strong> mahasiswa123 / mahasiswa123
+                            <strong class="d-inline-block" style="width: 80px;">Mahasiswa:</strong> mahasiswa123 / mahasiswa123 <br>
+                            <strong class="d-inline-block" style="width: 80px;">Sekprodi:</strong> sekprodi123 / sekprodi123
                         </small>
                     </div>
                 </div>
@@ -203,10 +212,13 @@
         const togglePassword = document.getElementById('togglePassword');
         const passwordInput = document.getElementById('password');
         const eyeIcon = document.getElementById('eyeIcon');
+        const contactAdmin = document.getElementById('contactAdmin');
 
+        // Toggle password visibility
         if (togglePassword && passwordInput && eyeIcon) {
             togglePassword.addEventListener('click', function(e) {
                 e.preventDefault();
+                
                 // Toggle type
                 const type = passwordInput.type === 'password' ? 'text' : 'password';
                 passwordInput.type = type;
@@ -226,7 +238,7 @@
         if (contactAdmin) {
             contactAdmin.addEventListener('click', function(e) {
                 e.preventDefault();
-                alert('Silakan hubungi admin melalui:\n\n📧 Email: admin@example.com\n📱 WhatsApp: +62 812-3456-7890\n\nAtau kunjungi ruangan admin di Gedung Utama Lt. 2');
+                alert('Silakan hubungi admin melalui:\n\n📧 Email: muhammadnurjaman50@gmail.com\n📱 WhatsApp: 081224625130\n\nAtau kunjungi ruangan admin di Garut');
             });
         }
     });

@@ -12,16 +12,24 @@ class PindahJadwal extends Model
     protected $table = 'pindah_jadwal';
 
     protected $fillable = [
-        'jadwal_id',
+        'jadwal_lama_id',
+        'jadwal_baru_id',
         'dosen_id',
         'alasan',
         'kosma_id',
         'status_id',
+        'catatan_kosma',
     ];
 
-    public function jadwal()
+    // Relations
+    public function jadwalLama()
     {
-        return $this->belongsTo(Jadwal::class, 'jadwal_id');
+        return $this->belongsTo(Jadwal::class, 'jadwal_lama_id');
+    }
+
+    public function jadwalBaru()
+    {
+        return $this->belongsTo(Jadwal::class, 'jadwal_baru_id');
     }
 
     public function dosen()

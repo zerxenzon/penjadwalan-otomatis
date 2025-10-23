@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\MataKuliahController;
@@ -9,6 +10,7 @@ use App\Http\Controllers\RuanganController;
 use App\Http\Controllers\KelasController;
 use App\Http\Controllers\DosenController;
 use App\Http\Controllers\BarterJadwalController;
+use App\Http\Controllers\CharterJadwalController;
 use App\Http\Controllers\JadwalController;
 use App\Http\Controllers\SuratTugasMengajarController;
 use App\Http\Controllers\SuratTugasMengajarPDFController;
@@ -46,10 +48,13 @@ Route::middleware('auth')->group(function () {
     // Barter Jadwal routes
     Route::resource('barter-jadwal', BarterJadwalController::class);
     Route::get('barter-jadwal/get-jadwal/{userId}', [BarterJadwalController::class, 'getJadwalDosen'])->name('barter-jadwal.get-jadwal');
-    Route::put('barter-jadwal/{id}/status', [BarterJadwalController::class, 'updateStatus'])->name('barter-jadwal.update-status');
+    Route::put('barter-jadwal/{barterJadwal}/status', [BarterJadwalController::class, 'updateStatus'])->name('barter-jadwal.update-status');
 
     // Jadwal routes
     Route::resource('jadwal', JadwalController::class);
+
+    // Charter Jadwal routes
+    Route::resource('charter-jadwal', \App\Http\Controllers\CharterJadwalController::class)->middleware(['auth', 'role:dosen']);
     
     // PDF routes
     Route::get('surat-tugas/{suratTugas}/pdf', [SuratTugasMengajarPDFController::class, 'generate'])
@@ -60,6 +65,17 @@ Route::middleware('auth')->group(function () {
     Route::post('pindah-jadwal/{pindahJadwal}/update-status', [PindahJadwalController::class, 'updateStatus'])
         ->name('pindah-jadwal.update-status');
     
+    // Pindah Jadwal - Dosen specific routes
+    Route::get('pindah-jadwal-dosen', [PindahJadwalController::class, 'dosenIndex'])
+        ->name('pindah-jadwal.dosen-index')
+        ->middleware('role:dosen,kaprodi,dekan');
+    Route::get('pindah-jadwal-dosen/create', [PindahJadwalController::class, 'create'])
+        ->name('pindah-jadwal.create')
+        ->middleware('role:dosen,kaprodi,dekan');
+    Route::post('pindah-jadwal-dosen', [PindahJadwalController::class, 'store'])
+        ->name('pindah-jadwal.store')
+        ->middleware('role:dosen,kaprodi,dekan');
+    
     // API routes
     Route::get('/api/dosen/{dosen}/jadwal', function($dosen) {
         return App\Models\Jadwal::where('dosen_id', $dosen)
@@ -67,13 +83,17 @@ Route::middleware('auth')->group(function () {
                                ->get();
     })->name('api.dosen.jadwal');
 
+    // Route untuk API Barter Jadwal
+    Route::get('/api/dosen/{id}/jadwal', [BarterJadwalController::class, 'getJadwalDosen'])
+        ->name('api.dosen.jadwal');
+
     // ===== DEKAN DASHBOARD =====
     Route::middleware('role:dekan')->group(function () {
         Route::get('/dekan', [DashboardController::class, 'dekan'])->name('dashboard.dekan');
     });
 
     // ===== KAPRODI DASHBOARD & DATA MASTER =====
-    Route::middleware('role:kaprodi,dekan')->group(function () {
+    Route::middleware('role:kaprodi,dekan,sekprodi')->group(function () {
         // Dashboard
         Route::get('/kaprodi', [DashboardController::class, 'kaprodi'])->name('dashboard.kaprodi');
         
@@ -133,19 +153,28 @@ Route::middleware('auth')->group(function () {
         });
         
         // Dosen Management Routes
-        Route::get('/dosen-list', [DosenController::class, 'index'])->name('dosen.index');
-        Route::get('/dosen/{id}', [DosenController::class, 'lihat'])->name('dosen.lihat');
-        Route::get('/dosen/export/pdf', [DosenController::class, 'exportPdf'])->name('dosen.export_pdf');
+        Route::prefix('dosen')->name('dosen.')->group(function () {
+            Route::get('/', [DosenController::class, 'index'])->name('index');
+            Route::get('/create', [DosenController::class, 'create'])->name('create');
+            Route::post('/', [DosenController::class, 'store'])->name('store');
+            Route::get('/{id}', [DosenController::class, 'show'])->name('show');
+            Route::get('/{id}/edit', [DosenController::class, 'edit'])->name('edit');
+            Route::put('/{id}', [DosenController::class, 'update'])->name('update');
+            Route::delete('/{id}', [DosenController::class, 'destroy'])->name('destroy');
+            Route::get('/export/pdf', [DosenController::class, 'exportPdf'])->name('export_pdf');
+        });
     });
 
     // ===== KOSMA DASHBOARD =====
     Route::middleware('role:kosma')->group(function () {
         Route::get('/kosma', [DashboardController::class, 'kosma'])->name('dashboard.kosma');
+        Route::get('/kosma/jadwal-kelas', [DashboardController::class, 'kosmaJadwalKelas'])->name('kosma.jadwal-kelas');
     });
 
     // ===== MAHASISWA DASHBOARD =====
     Route::middleware('role:mahasiswa')->group(function () {
         Route::get('/mahasiswa', [DashboardController::class, 'mahasiswa'])->name('dashboard.mahasiswa');
+        Route::get('/mahasiswa/jadwal/export-pdf', [DashboardMahasiswaController::class, 'exportPdf'])->name('mahasiswa.jadwal.export-pdf');
     });
 
     // ===== SEKPRODI DASHBOARD =====
@@ -195,7 +224,7 @@ Route::middleware('auth')->group(function () {
 });
 
 // ===== SURAT TUGAS CRUD & APPROVAL =====
-Route::middleware('role:kaprodi,dekan')->group(function () {
+Route::middleware('role:kaprodi,dekan,sekprodi')->group(function () {
     Route::prefix('surat-tugas')->name('surat-tugas.')->group(function () {
         Route::get('/', [SuratTugasMengajarController::class, 'index'])->name('index');
         Route::get('/tambah', [SuratTugasMengajarController::class, 'tambah'])->name('tambah');
@@ -218,4 +247,78 @@ Route::middleware('role:kaprodi,dekan')->group(function () {
         // Export PDF
         Route::get('/{id}/export-pdf', [SuratTugasMengajarController::class, 'exportPdf'])->name('export_pdf');
     });
+});
+
+// Route untuk mengambil jadwal dosen
+Route::get('/get-jadwal-dosen/{id}', [BarterJadwalController::class, 'getJadwalDosen'])
+    ->name('get-jadwal-dosen');
+
+// Charter Jadwal Routes
+Route::middleware(['auth', 'role:dosen'])->group(function() {
+    Route::get('/charter-jadwal', [CharterJadwalController::class, 'index'])->name('charter-jadwal.index');
+    Route::post('/charter-jadwal', [CharterJadwalController::class, 'store'])->name('charter-jadwal.store');
+    Route::delete('/charter-jadwal/{id}', [CharterJadwalController::class, 'destroy'])->name('charter-jadwal.destroy');
+});
+
+// Charter Jadwal Monitoring (Kaprodi, Dekan & Sekprodi - Read Only)
+Route::middleware(['auth', 'role:kaprodi,dekan,sekprodi'])->group(function() {
+    Route::get('/charter-jadwal/monitoring', [CharterJadwalController::class, 'monitoring'])->name('charter-jadwal.monitoring');
+});
+
+// Dosen Routes (Kaprodi, Dekan & Sekprodi)
+Route::middleware(['auth', 'role:kaprodi,dekan,sekprodi'])->group(function () {
+    Route::get('/dosen', [DosenController::class, 'index'])->name('dosen.index');
+    Route::get('/dosen/lihat/{id}', [DosenController::class, 'show'])->name('dosen.lihat');
+    Route::get('/dosen/export-pdf', [DosenController::class, 'exportPdf'])->name('dosen.export_pdf');
+    
+    // Toggle Dekan
+    Route::patch('/dosen/{id}/toggle-dekan', [DosenController::class, 'toggleDekan'])
+        ->name('dosen.toggle-dekan');
+});
+
+// Dashboard Routes
+Route::middleware(['auth'])->group(function () {
+    Route::get('/dashboard/dekan', [DashboardController::class, 'dekan'])
+        ->name('dashboard.dekan')
+        ->middleware('role:dekan');
+    
+    Route::get('/dashboard/kaprodi', [DashboardController::class, 'kaprodi'])
+        ->name('dashboard.kaprodi')
+        ->middleware('role:kaprodi');
+    
+    // TAMBAHKAN INI: Dashboard untuk dosen
+    Route::get('/dashboard/dosen', [DashboardController::class, 'dosen'])
+        ->name('dashboard.dosen')
+        ->middleware('role:dosen,kaprodi,dekan');
+    
+    Route::get('/dashboard/kosma', [DashboardController::class, 'kosma'])
+        ->name('dashboard.kosma')
+        ->middleware('role:kosma');
+    
+    Route::get('/dashboard/mahasiswa', [DashboardController::class, 'mahasiswa'])
+        ->name('dashboard.mahasiswa')
+        ->middleware('role:mahasiswa');
+    
+    Route::get('/dashboard/sekprodi', [DashboardController::class, 'sekprodi'])
+        ->name('dashboard.sekprodi')
+        ->middleware('role:sekprodi');
+});
+
+// Add this route for emergency diagnostic checks
+Route::get('/check-charters', function () {
+    // Use Auth facade properly
+    $userId = Auth::id();
+    
+    // Only allow this in development
+    if (!config('app.debug')) {
+        return response()->json(['error' => 'Debug mode disabled']);
+    }
+    
+    $results = [
+        'stms' => DB::select('SELECT * FROM surat_tugas_mengajar WHERE dosen_id = ?', [$userId]),
+        'jadwals' => DB::select('SELECT j.* FROM jadwal j JOIN surat_tugas_mengajar stm ON j.surat_tugas_mengajar_id = stm.id WHERE stm.dosen_id = ?', [$userId]),
+        'users' => DB::select('SELECT id, nama, role_id FROM user WHERE id = ?', [$userId])
+    ];
+    
+    return response()->json($results);
 });

@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string('password');
             $table->unsignedBigInteger('role_id');
             $table->unsignedBigInteger('status_id');
+            $table->boolean('is_dekan')->default(false);
             $table->timestamps();
 
             // Foreign Keys
