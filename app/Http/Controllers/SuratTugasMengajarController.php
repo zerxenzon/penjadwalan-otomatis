@@ -10,6 +10,7 @@ use App\Models\Semester;
 use App\Models\Status;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Barryvdh\DomPDF\Facade\Pdf;
 
@@ -145,6 +146,10 @@ class SuratTugasMengajarController extends Controller
         try {
             $createdCount = 0;
             $errors = [];
+            $tahun = date("Y");
+            
+            // Lock table untuk menghindari race condition saat generate nomor surat
+            DB::beginTransaction();
             
             foreach ($validated["mata_kuliah"] as $mk) {
                 // Check for duplicates
@@ -162,10 +167,33 @@ class SuratTugasMengajarController extends Controller
                     continue;
                 }
 
-                // Generate nomor surat
-                $tahun = date("Y");
-                $count = SuratTugasMengajar::whereYear("created_at", $tahun)->count() + 1;
-                $nomorSurat = sprintf("%03d/STM-FT.UNPAM/%d", $count, $tahun);
+                // Generate nomor surat dengan retry untuk menghindari duplicate
+                $maxRetries = 5;
+                $nomorSurat = null;
+                
+                for ($i = 0; $i < $maxRetries; $i++) {
+                    // Hitung nomor urut berdasarkan record yang ada + offset retry
+                    $count = SuratTugasMengajar::whereYear("created_at", $tahun)
+                        ->lockForUpdate() // Lock untuk mencegah race condition
+                        ->count() + 1 + $i;
+                    
+                    $tempNomor = sprintf("%03d/STM-FT.UNPAM/%d", $count, $tahun);
+                    
+                    // Cek apakah nomor sudah ada
+                    if (!SuratTugasMengajar::where('nomor_surat', $tempNomor)->exists()) {
+                        $nomorSurat = $tempNomor;
+                        break;
+                    }
+                }
+                
+                // Jika masih gagal generate nomor unik, gunakan timestamp
+                if (!$nomorSurat) {
+                    $nomorSurat = sprintf("%03d/STM-FT.UNPAM/%d-%s", 
+                        SuratTugasMengajar::whereYear("created_at", $tahun)->count() + 1,
+                        $tahun,
+                        time()
+                    );
+                }
                 
                 // Create surat tugas
                 SuratTugasMengajar::create([
@@ -180,6 +208,8 @@ class SuratTugasMengajarController extends Controller
                 
                 $createdCount++;
             }
+            
+            DB::commit();
 
             if ($createdCount > 0) {
                 $message = "Berhasil membuat {$createdCount} surat tugas.";
@@ -196,6 +226,7 @@ class SuratTugasMengajarController extends Controller
             }
 
         } catch (\Exception $e) {
+            DB::rollBack();
             Log::error("Error creating surat tugas: " . $e->getMessage());
             return back()
                 ->withInput()

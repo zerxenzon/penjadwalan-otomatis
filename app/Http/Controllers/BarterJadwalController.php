@@ -243,11 +243,18 @@ class BarterJadwalController extends Controller
                 }
 
                 // Tukar surat_tugas_mengajar_id di jadwal
+                // Gunakan temporary null untuk menghindari unique constraint violation
                 $stmA = $jadwalA->surat_tugas_mengajar_id;
                 $stmB = $jadwalB->surat_tugas_mengajar_id;
 
-                $jadwalA->update(['surat_tugas_mengajar_id' => $stmB]);
+                // Set jadwal A ke null terlebih dahulu
+                $jadwalA->update(['surat_tugas_mengajar_id' => null]);
+                
+                // Update jadwal B dengan surat tugas A
                 $jadwalB->update(['surat_tugas_mengajar_id' => $stmA]);
+                
+                // Update jadwal A dengan surat tugas B
+                $jadwalA->update(['surat_tugas_mengajar_id' => $stmB]);
             }
 
             DB::commit();

@@ -193,6 +193,18 @@ class CharterJadwalController extends Controller
                 throw new Exception('Jadwal tidak tersedia atau sudah diambil oleh dosen lain');
             }
             
+            // Check if this dosen already has an STM for this combination
+            $existingStm = DB::table('surat_tugas_mengajar')
+                ->where('dosen_id', $userId)
+                ->where('mata_kuliah_id', $validated['mata_kuliah_id'])
+                ->where('kelas_id', $validated['kelas_id'])
+                ->where('semester_id', $validated['semester_id'])
+                ->first();
+            
+            if ($existingStm) {
+                throw new Exception('Anda sudah memiliki surat tugas mengajar untuk mata kuliah dan kelas ini di semester yang sama. Silakan pilih mata kuliah atau kelas yang berbeda.');
+            }
+            
             // Create new STM with simplified approach
             $stmId = DB::table('surat_tugas_mengajar')->insertGetId([
                 'dosen_id' => $userId,

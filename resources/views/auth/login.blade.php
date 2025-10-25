@@ -51,21 +51,21 @@ svg#svg-bg {
     border-radius: 12px;
     border: 2px solid rgba(255, 100, 0, 0.3);
     box-shadow: 0 6px 30px rgba(255, 69, 0, 0.4), 0 0 40px rgba(255, 100, 0, 0.2);
-    max-width: 420px;
+    max-width: 380px;
     width: 100%;
     pointer-events: auto;
 }
 
 /* Konten kartu */
 .card-login .card-body {
-    padding: 24px;
+    padding: 20px;
 }
 
 /* Logo */
 .logo-img {
-    width: 72px;
+    width: 60px;
     height: auto;
-    margin-bottom: 0.75rem;
+    margin-bottom: 0.5rem;
     filter: drop-shadow(0 0 10px rgba(255, 100, 0, 0.6));
 }
 
@@ -73,25 +73,28 @@ svg#svg-bg {
 .card-login h5 {
     color: #ff6600;
     text-shadow: 0 0 10px rgba(255, 100, 0, 0.5);
+    font-size: 1.25rem;
+    margin-bottom: 0.75rem;
 }
 
 /* Label */
 .form-label {
     font-weight: 600;
-    margin-bottom: 0.4rem;
-    font-size: 0.95rem;
+    margin-bottom: 0.3rem;
+    font-size: 0.875rem;
     color: #ffaa66;
 }
 
 /* Input dengan tema dark fire */
 .form-control {
     width: 100%;
-    padding: 0.75rem 2.25rem 0.75rem 0.9rem;
+    padding: 0.625rem 2rem 0.625rem 0.75rem;
     border: 1px solid rgba(255, 100, 0, 0.3);
     border-radius: 8px;
-    font-size: 1rem;
+    font-size: 0.9rem;
     background: rgba(40, 20, 10, 0.8);
     color: #ffcc99;
+    transition: all 0.2s ease;
 }
 
 .form-control:focus {
@@ -136,24 +139,25 @@ svg#svg-bg {
 
 .text-end small {
     color: #ffaa66;
+    font-size: 0.8rem;
 }
 
 /* Tombol Login dengan gradient fire */
 .btn-primary {
     background: linear-gradient(135deg, #ff4500 0%, #ff6600 50%, #ff8800 100%);
     border: none;
-    padding: 0.7rem 1rem;
+    padding: 0.625rem 1rem;
     font-weight: 600;
     border-radius: 8px;
     box-shadow: 0 4px 15px rgba(255, 69, 0, 0.4);
     color: #fff;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
 }
 
 .btn-primary:hover {
     background: linear-gradient(135deg, #ff6600 0%, #ff8800 50%, #ffaa00 100%);
-    box-shadow: 0 6px 20px rgba(255, 100, 0, 0.6);
-    transform: translateY(-2px);
-    transition: all 0.3s ease;
+    box-shadow: 0 5px 18px rgba(255, 100, 0, 0.5);
 }
 
 /* HR divider */
@@ -163,9 +167,9 @@ hr {
 
 /* Alert demo account dengan tema fire */
 .alert-info {
-    font-size: 0.85rem;
-    padding: 0.8rem 1rem;
-    border-radius: 10px;
+    font-size: 0.75rem;
+    padding: 0.65rem 0.85rem;
+    border-radius: 8px;
     background: rgba(50, 25, 10, 0.6);
     border: 1px solid rgba(255, 100, 0, 0.3);
     color: #ffcc99;
@@ -173,6 +177,7 @@ hr {
 
 .alert-info .fw-bold {
     color: #ff8844;
+    font-size: 0.8rem;
 }
 
 .alert-info strong {
@@ -189,19 +194,19 @@ hr {
     background: linear-gradient(135deg, rgba(255, 100, 0, 0.2) 0%, rgba(255, 69, 0, 0.3) 100%);
     border: 1px solid rgba(255, 100, 0, 0.4);
     color: #ff8844;
-    padding: 0.6rem 1.2rem;
+    padding: 0.5rem 1rem;
     border-radius: 8px;
     font-weight: 600;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all 0.2s ease;
     width: 100%;
+    font-size: 0.875rem;
 }
 
 .btn-demo-toggle:hover {
     background: linear-gradient(135deg, rgba(255, 100, 0, 0.3) 0%, rgba(255, 69, 0, 0.4) 100%);
     border-color: rgba(255, 100, 0, 0.6);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(255, 100, 0, 0.3);
+    box-shadow: 0 2px 8px rgba(255, 100, 0, 0.25);
 }
 
 .btn-demo-toggle i.fa-chevron-down {
@@ -240,23 +245,24 @@ hr {
 /* Demo Header */
 .demo-header {
     background: linear-gradient(135deg, rgba(255, 69, 0, 0.3) 0%, rgba(255, 100, 0, 0.2) 100%);
-    padding: 0.8rem 1rem;
+    padding: 0.65rem 0.85rem;
     border-bottom: 1px solid rgba(255, 100, 0, 0.3);
     display: flex;
     align-items: center;
     gap: 0.5rem;
     color: #ff8844;
     font-weight: 600;
+    font-size: 0.875rem;
 }
 
 .demo-header i {
-    font-size: 1.1rem;
+    font-size: 1rem;
 }
 
 /* Demo Body */
 .demo-body {
     padding: 0.5rem;
-    max-height: 320px;
+    max-height: 280px;
     overflow-y: auto;
 }
 
@@ -284,20 +290,19 @@ hr {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0.75rem;
-    margin-bottom: 0.5rem;
+    padding: 0.6rem;
+    margin-bottom: 0.4rem;
     background: rgba(40, 20, 10, 0.5);
     border: 1px solid rgba(255, 100, 0, 0.2);
     border-radius: 8px;
-    transition: all 0.3s ease;
+    transition: all 0.2s ease;
     cursor: pointer;
 }
 
 .demo-item:hover {
     background: rgba(50, 25, 10, 0.7);
     border-color: rgba(255, 100, 0, 0.4);
-    transform: translateX(5px);
-    box-shadow: 0 2px 10px rgba(255, 100, 0, 0.2);
+    box-shadow: 0 2px 8px rgba(255, 100, 0, 0.15);
 }
 
 .demo-item:last-child {
@@ -308,18 +313,18 @@ hr {
 .demo-role {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 0.4rem;
     color: #ff8844;
-    min-width: 100px;
+    min-width: 90px;
 }
 
 .demo-role i {
-    font-size: 1.1rem;
+    font-size: 0.95rem;
     color: #ff6600;
 }
 
 .demo-role strong {
-    font-size: 0.9rem;
+    font-size: 0.8rem;
 }
 
 /* Demo Credentials */
@@ -327,16 +332,17 @@ hr {
     flex: 1;
     text-align: center;
     color: #ffaa66;
-    font-size: 0.85rem;
+    font-size: 0.75rem;
 }
 
 .demo-credentials code {
     background: rgba(255, 100, 0, 0.15);
-    padding: 0.2rem 0.5rem;
+    padding: 0.15rem 0.4rem;
     border-radius: 4px;
     color: #ffcc99;
     font-family: 'Courier New', monospace;
     border: 1px solid rgba(255, 100, 0, 0.2);
+    font-size: 0.75rem;
 }
 
 /* Copy Button */
@@ -344,21 +350,20 @@ hr {
     background: linear-gradient(135deg, #ff4500 0%, #ff6600 100%);
     border: none;
     color: #fff;
-    padding: 0.4rem 0.7rem;
+    padding: 0.35rem 0.6rem;
     border-radius: 6px;
     cursor: pointer;
-    transition: all 0.3s ease;
-    font-size: 0.9rem;
+    transition: all 0.2s ease;
+    font-size: 0.8rem;
 }
 
 .btn-copy:hover {
     background: linear-gradient(135deg, #ff6600 0%, #ff8800 100%);
-    transform: scale(1.1);
-    box-shadow: 0 2px 10px rgba(255, 100, 0, 0.5);
+    box-shadow: 0 2px 8px rgba(255, 100, 0, 0.4);
 }
 
 .btn-copy:active {
-    transform: scale(0.95);
+    transform: scale(0.98);
 }
 
 .btn-copy.copied {

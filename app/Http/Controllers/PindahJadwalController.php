@@ -270,11 +270,18 @@ class PindahJadwalController extends Controller
                 }
 
                 // Swap surat_tugas_mengajar_id
+                // Gunakan temporary null untuk menghindari unique constraint violation
                 $stmLama = $jadwalLama->surat_tugas_mengajar_id;
                 $stmBaru = $jadwalBaru->surat_tugas_mengajar_id;
 
-                $jadwalLama->update(['surat_tugas_mengajar_id' => $stmBaru]);
+                // Set jadwal lama ke null terlebih dahulu
+                $jadwalLama->update(['surat_tugas_mengajar_id' => null]);
+                
+                // Update jadwal baru dengan surat tugas lama
                 $jadwalBaru->update(['surat_tugas_mengajar_id' => $stmLama]);
+                
+                // Update jadwal lama dengan surat tugas baru
+                $jadwalLama->update(['surat_tugas_mengajar_id' => $stmBaru]);
                 
                 // TODO: Send notifications to dosen and mahasiswa
                 // Kirim notifikasi WhatsApp/Email ke:

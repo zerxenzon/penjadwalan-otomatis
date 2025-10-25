@@ -140,9 +140,9 @@ class BiodataSeeder extends Seeder
                 'updated_at' => now(),
             ],
 
-            // Mahasiswa - Cahya Mahasiswa (user_id: 12)
+            // Mahasiswa - Cahya Mahasiswa (user_id: 9)
             [
-                'user_id' => 12,
+                'user_id' => 9,
                 'nip' => null,
                 'nidn' => null,
                 'nik' => '3216052003101006',
