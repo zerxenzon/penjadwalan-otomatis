@@ -16,6 +16,7 @@ use App\Http\Controllers\SuratTugasMengajarController;
 use App\Http\Controllers\SuratTugasMengajarPDFController;
 use App\Http\Controllers\DashboardMahasiswaController;
 use App\Http\Controllers\PindahJadwalController;
+use App\Http\Controllers\TradingBotController;
 
 /*
 |--------------------------------------------------------------------------
@@ -321,4 +322,27 @@ Route::get('/check-charters', function () {
     ];
     
     return response()->json($results);
+});
+
+// ===== TRADING BOT ROUTES =====
+Route::prefix('trading-bot')->name('trading-bot.')->middleware('auth')->group(function () {
+    // Dashboard
+    Route::get('/', [TradingBotController::class, 'index'])->name('index');
+    
+    // Settings
+    Route::get('/settings', [TradingBotController::class, 'settings'])->name('settings');
+    Route::post('/settings', [TradingBotController::class, 'updateSettings'])->name('settings.update');
+    Route::post('/toggle-status', [TradingBotController::class, 'toggleStatus'])->name('toggle-status');
+    
+    // Operations
+    Route::post('/run', [TradingBotController::class, 'run'])->name('run');
+    Route::post('/monitor', [TradingBotController::class, 'monitor'])->name('monitor');
+    
+    // Data views
+    Route::get('/trades', [TradingBotController::class, 'trades'])->name('trades');
+    Route::get('/signals', [TradingBotController::class, 'signals'])->name('signals');
+    Route::get('/statistics', [TradingBotController::class, 'statistics'])->name('statistics');
+    
+    // Trade operations
+    Route::post('/trades/{trade}/close', [TradingBotController::class, 'closeTrade'])->name('trades.close');
 });
