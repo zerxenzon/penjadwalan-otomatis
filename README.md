@@ -30,6 +30,13 @@ Sistem informasi penjadwalan mata kuliah otomatis berbasis web dengan fitur char
 ### 6. **Sekretaris Prodi**
 - ✅ Melihat data statistik
 
+### 7. **🤖 Gold Scalping AI Trading Bot** *(New Feature)*
+- ✅ Automated gold trading with AI-powered signals
+- ✅ Technical analysis (RSI, EMA, MACD)
+- ✅ Risk management with stop loss/take profit
+- ✅ Web dashboard and CLI interface
+- ✅ Full documentation in [docs/TRADING_BOT_README.md](docs/TRADING_BOT_README.md)
+
 ## 📋 Persyaratan Sistem
 
 - PHP >= 8.1
@@ -469,3 +476,55 @@ graph TD;
     click A href "/login"
     click B href "/dashboard"
 ```
+
+---
+
+## 🤖 Gold Scalping AI Trading Bot
+
+The application now includes an AI-powered gold scalping trading bot with advanced technical analysis capabilities.
+
+### Quick Start
+
+1. **Access the Trading Bot Dashboard:**
+   ```
+   Navigate to: /trading-bot
+   ```
+
+2. **Configure the Bot:**
+   - Set initial capital
+   - Configure risk parameters
+   - Choose timeframe (1m, 5m, 15m, etc.)
+   - Activate the bot
+
+3. **Run the Bot via CLI:**
+   ```bash
+   php artisan trading-bot:run
+   ```
+
+4. **Monitor Trades:**
+   ```bash
+   php artisan trading-bot:run --monitor
+   ```
+
+### Key Features
+
+- **Technical Indicators:** RSI, EMA (9/21), SMA, MACD
+- **Smart Signal Generation:** AI-powered buy/sell signals with confidence scoring
+- **Risk Management:** Automatic stop loss, take profit, position sizing
+- **Real-time Monitoring:** Track open trades and performance metrics
+- **Comprehensive Dashboard:** View statistics, recent trades, and signals
+
+### Documentation
+
+For complete documentation, configuration options, and API reference, see:
+**[📖 Trading Bot Documentation](docs/TRADING_BOT_README.md)**
+
+### ⚠️ Important Notice
+
+The trading bot is for **demonstration and educational purposes only**. It uses simulated market data. For production use, integration with real trading APIs and extensive testing is required.
+
+---
+
+## 📝 License
+
+MIT License
