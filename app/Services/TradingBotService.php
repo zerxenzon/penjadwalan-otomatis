@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Log;
 class TradingBotService
 {
     protected SignalAnalyzerService $signalAnalyzer;
+
     protected TechnicalIndicatorService $indicatorService;
 
     public function __construct(
@@ -26,14 +27,14 @@ class TradingBotService
 
     /**
      * Run the trading bot
-     * 
+     *
      * @return array Bot execution results
      */
     public function run(): array
     {
         $settings = $this->getSettings();
-        
-        if (!$settings->is_active) {
+
+        if (! $settings->is_active) {
             return ['status' => 'inactive', 'message' => 'Trading bot is not active'];
         }
 
@@ -41,10 +42,10 @@ class TradingBotService
 
         // Simulate market data (in production, this would fetch real data)
         $marketData = $this->getMarketData($settings->timeframe);
-        
+
         // Analyze market and generate signal
         $signal = $this->signalAnalyzer->analyzeMarket($marketData, $settings->timeframe);
-        
+
         $results = [
             'status' => 'completed',
             'signal_generated' => $signal !== null,
@@ -73,9 +74,9 @@ class TradingBotService
 
     /**
      * Execute a trade based on signal
-     * 
-     * @param TradingSignal $signal Trading signal
-     * @param TradingBotSetting $settings Bot settings
+     *
+     * @param  TradingSignal  $signal  Trading signal
+     * @param  TradingBotSetting  $settings  Bot settings
      * @return Trade Executed trade
      */
     protected function executeTrade(TradingSignal $signal, TradingBotSetting $settings): Trade
@@ -107,24 +108,24 @@ class TradingBotService
 
     /**
      * Calculate position size based on risk management
-     * 
-     * @param TradingBotSetting $settings Bot settings
+     *
+     * @param  TradingBotSetting  $settings  Bot settings
      * @return float Position size in lots
      */
     protected function calculatePositionSize(TradingBotSetting $settings): float
     {
         $riskAmount = $settings->initial_capital * ($settings->risk_per_trade / 100);
-        
+
         // Simplified position sizing (in real scenario, would consider stop loss distance)
         $positionSize = $riskAmount / 1000; // Approximate conversion
-        
+
         return round(max($positionSize, 0.01), 2); // Minimum 0.01 lot
     }
 
     /**
      * Check if bot can open a new trade
-     * 
-     * @param TradingBotSetting $settings Bot settings
+     *
+     * @param  TradingBotSetting  $settings  Bot settings
      * @return bool True if can open trade
      */
     protected function canOpenTrade(TradingBotSetting $settings): bool
@@ -146,7 +147,7 @@ class TradingBotService
 
     /**
      * Monitor and manage open trades
-     * 
+     *
      * @return array Monitoring results
      */
     public function monitorTrades(): array
@@ -156,16 +157,16 @@ class TradingBotService
 
         foreach ($openTrades as $trade) {
             $results['checked']++;
-            
+
             // Simulate current price (in production, fetch real price)
             $currentPrice = $this->getCurrentPrice();
-            
+
             // Check stop loss and take profit
             if ($this->shouldCloseTrade($trade, $currentPrice)) {
                 $trade->close($currentPrice);
                 $results['closed']++;
                 $results['trades'][] = $trade;
-                
+
                 Log::info('Trade closed', [
                     'trade_id' => $trade->id,
                     'profit_loss' => $trade->profit_loss,
@@ -178,9 +179,9 @@ class TradingBotService
 
     /**
      * Determine if trade should be closed
-     * 
-     * @param Trade $trade Trade to check
-     * @param float $currentPrice Current market price
+     *
+     * @param  Trade  $trade  Trade to check
+     * @param  float  $currentPrice  Current market price
      * @return bool True if should close
      */
     protected function shouldCloseTrade(Trade $trade, float $currentPrice): bool
@@ -196,14 +197,14 @@ class TradingBotService
 
     /**
      * Get or create bot settings
-     * 
+     *
      * @return TradingBotSetting Bot settings
      */
     public function getSettings(): TradingBotSetting
     {
         $settings = TradingBotSetting::first();
-        
-        if (!$settings) {
+
+        if (! $settings) {
             $settings = TradingBotSetting::create([
                 'name' => 'Gold Scalping Bot',
                 'is_active' => false,
@@ -221,8 +222,8 @@ class TradingBotService
 
     /**
      * Get simulated market data
-     * 
-     * @param string $timeframe Timeframe
+     *
+     * @param  string  $timeframe  Timeframe
      * @return array Price data
      */
     protected function getMarketData(string $timeframe): array
@@ -230,30 +231,30 @@ class TradingBotService
         // Simulate gold price data (in production, fetch from API)
         $basePrice = 2650.00; // Gold price around $2650
         $prices = [];
-        
+
         // Generate data with potential signal patterns
         $trend = rand(0, 1) ? 1 : -1; // Random trend direction
-        
+
         for ($i = 0; $i < 50; $i++) {
             // Generate trending price movement with some noise
             $trendChange = $trend * (rand(5, 15) / 10);
             $noise = (rand(-50, 50) / 100) * (rand(1, 5) / 10);
             $basePrice += $trendChange + $noise;
-            
+
             // Occasionally reverse trend
             if ($i % 15 === 0 && $i > 0) {
                 $trend *= -1;
             }
-            
+
             $prices[] = round($basePrice, 2);
         }
-        
+
         return $prices;
     }
 
     /**
      * Get current market price (simulated)
-     * 
+     *
      * @return float Current price
      */
     protected function getCurrentPrice(): float
@@ -264,7 +265,7 @@ class TradingBotService
 
     /**
      * Get bot statistics
-     * 
+     *
      * @return array Statistics
      */
     public function getStatistics(): array
@@ -272,15 +273,15 @@ class TradingBotService
         $totalTrades = Trade::count();
         $openTrades = Trade::where('status', 'OPEN')->count();
         $closedTrades = Trade::where('status', 'CLOSED')->count();
-        
+
         $profitableTrades = Trade::where('status', 'CLOSED')
             ->where('profit_loss', '>', 0)
             ->count();
-        
+
         $totalProfitLoss = Trade::where('status', 'CLOSED')
             ->sum('profit_loss');
-        
-        $winRate = $closedTrades > 0 
+
+        $winRate = $closedTrades > 0
             ? round(($profitableTrades / $closedTrades) * 100, 2)
             : 0;
 

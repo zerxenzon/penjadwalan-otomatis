@@ -10,9 +10,9 @@ class TechnicalIndicatorService
 {
     /**
      * Calculate Relative Strength Index (RSI)
-     * 
-     * @param array $prices Array of prices (most recent last)
-     * @param int $period RSI period (default: 14)
+     *
+     * @param  array  $prices  Array of prices (most recent last)
+     * @param  int  $period  RSI period (default: 14)
      * @return float RSI value (0-100)
      */
     public function calculateRSI(array $prices, int $period = 14): float
@@ -50,9 +50,9 @@ class TechnicalIndicatorService
 
     /**
      * Calculate Exponential Moving Average (EMA)
-     * 
-     * @param array $prices Array of prices
-     * @param int $period EMA period
+     *
+     * @param  array  $prices  Array of prices
+     * @param  int  $period  EMA period
      * @return float EMA value
      */
     public function calculateEMA(array $prices, int $period): float
@@ -62,7 +62,7 @@ class TechnicalIndicatorService
         }
 
         $multiplier = 2 / ($period + 1);
-        
+
         // Start with SMA
         $sma = array_sum(array_slice($prices, 0, $period)) / $period;
         $ema = $sma;
@@ -77,9 +77,9 @@ class TechnicalIndicatorService
 
     /**
      * Calculate Simple Moving Average (SMA)
-     * 
-     * @param array $prices Array of prices
-     * @param int $period SMA period
+     *
+     * @param  array  $prices  Array of prices
+     * @param  int  $period  SMA period
      * @return float SMA value
      */
     public function calculateSMA(array $prices, int $period): float
@@ -89,13 +89,14 @@ class TechnicalIndicatorService
         }
 
         $relevantPrices = array_slice($prices, -$period);
+
         return round(array_sum($relevantPrices) / $period, 2);
     }
 
     /**
      * Calculate Moving Average Convergence Divergence (MACD)
-     * 
-     * @param array $prices Array of prices
+     *
+     * @param  array  $prices  Array of prices
      * @return array ['macd' => float, 'signal' => float, 'histogram' => float]
      */
     public function calculateMACD(array $prices): array
@@ -118,9 +119,9 @@ class TechnicalIndicatorService
 
     /**
      * Detect trend based on moving averages
-     * 
-     * @param float $emaFast Fast EMA value
-     * @param float $emaSlow Slow EMA value
+     *
+     * @param  float  $emaFast  Fast EMA value
+     * @param  float  $emaSlow  Slow EMA value
      * @return string 'BULLISH', 'BEARISH', or 'NEUTRAL'
      */
     public function detectTrend(float $emaFast, float $emaSlow): string

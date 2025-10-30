@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Trade;
 use App\Models\TradingSignal;
-use App\Models\TradingBotSetting;
 use App\Services\TradingBotService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -25,12 +24,12 @@ class TradingBotController extends Controller
     {
         $settings = $this->botService->getSettings();
         $statistics = $this->botService->getStatistics();
-        
+
         $recentTrades = Trade::with('signal')
             ->orderBy('created_at', 'desc')
             ->limit(10)
             ->get();
-        
+
         $recentSignals = TradingSignal::orderBy('created_at', 'desc')
             ->limit(10)
             ->get();
@@ -44,6 +43,7 @@ class TradingBotController extends Controller
     public function settings()
     {
         $settings = $this->botService->getSettings();
+
         return view('trading-bot.settings', compact('settings'));
     }
 
@@ -75,10 +75,10 @@ class TradingBotController extends Controller
     public function toggleStatus(Request $request)
     {
         $settings = $this->botService->getSettings();
-        $settings->update(['is_active' => !$settings->is_active]);
+        $settings->update(['is_active' => ! $settings->is_active]);
 
         $status = $settings->is_active ? 'activated' : 'deactivated';
-        
+
         return response()->json([
             'success' => true,
             'message' => "Trading bot {$status} successfully",
@@ -93,17 +93,17 @@ class TradingBotController extends Controller
     {
         try {
             $results = $this->botService->run();
-            
+
             return response()->json([
                 'success' => true,
                 'results' => $results,
             ]);
         } catch (\Exception $e) {
             Log::error('Trading bot run failed', ['error' => $e->getMessage()]);
-            
+
             return response()->json([
                 'success' => false,
-                'message' => 'Trading bot execution failed: ' . $e->getMessage(),
+                'message' => 'Trading bot execution failed: '.$e->getMessage(),
             ], 500);
         }
     }
@@ -115,17 +115,17 @@ class TradingBotController extends Controller
     {
         try {
             $results = $this->botService->monitorTrades();
-            
+
             return response()->json([
                 'success' => true,
                 'results' => $results,
             ]);
         } catch (\Exception $e) {
             Log::error('Trade monitoring failed', ['error' => $e->getMessage()]);
-            
+
             return response()->json([
                 'success' => false,
-                'message' => 'Trade monitoring failed: ' . $e->getMessage(),
+                'message' => 'Trade monitoring failed: '.$e->getMessage(),
             ], 500);
         }
     }
@@ -136,7 +136,7 @@ class TradingBotController extends Controller
     public function statistics()
     {
         $statistics = $this->botService->getStatistics();
-        
+
         return response()->json([
             'success' => true,
             'statistics' => $statistics,

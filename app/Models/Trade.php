@@ -45,11 +45,11 @@ class Trade extends Model
 
     public function calculateProfitLoss(): float
     {
-        if (!$this->exit_price) {
+        if (! $this->exit_price) {
             return 0;
         }
 
-        $priceDiff = $this->trade_type === 'BUY' 
+        $priceDiff = $this->trade_type === 'BUY'
             ? $this->exit_price - $this->entry_price
             : $this->entry_price - $this->exit_price;
 
